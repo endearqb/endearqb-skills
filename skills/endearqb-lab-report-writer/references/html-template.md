@@ -11,7 +11,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2f4f4f">
 <title>[报告标题]</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -331,14 +332,17 @@ li { margin: 7px 0; }
 @media print { .verify-panel { display: none !important; } }
 
 /* 移动端贴底全宽 */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .verify-panel {
     bottom: 0;
     right: 0;
     left: 0;
     width: 100%;
     max-width: 100%;
-    border-radius: 10px 10px 0 0;
+    border-radius: 12px 12px 0 0;
+  }
+  .verify-panel.open .verify-panel-body {
+    max-height: 55vh;
   }
 }
 
@@ -493,46 +497,223 @@ figcaption {
   font-size: 11.5px;
 }
 
-/* ===== 响应式 ===== */
+/* ===== 移动端浮动导航按钮（1024px 以下替代侧边目录）===== */
+.mobile-nav-btn {
+  display: none; /* 默认隐藏，由媒体查询开启 */
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(47,79,79,0.40);
+  z-index: 8100;
+  transition: transform 0.2s ease, background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-nav-btn:hover,
+.mobile-nav-btn:active { transform: scale(1.08); background: #3d6b6b; }
 
-/* 1280px 以上：悬浮目录显示 */
+/* 展开状态：图标变 × */
+.mobile-nav-btn.open::after { content: '✕'; }
+.mobile-nav-btn:not(.open)::after { content: '☰'; }
+
+/* 目录菜单弹层 */
+.mobile-nav-menu {
+  display: none;
+  position: fixed;
+  bottom: 78px;
+  left: 16px;
+  width: min(280px, calc(100vw - 32px));
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(31,35,40,0.18);
+  z-index: 8090;
+  overflow: hidden;
+  animation: mobileNavIn 0.22s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.mobile-nav-menu.open { display: block; }
+
+@keyframes mobileNavIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.mobile-nav-label {
+  padding: 10px 16px 8px;
+  font: 700 11px/1 "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid var(--line);
+}
+
+.mobile-nav-menu ol {
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  max-height: 60vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-nav-menu li { margin: 0; }
+
+.mobile-nav-menu a {
+  display: block;
+  padding: 11px 16px;
+  font: 14px/1.4 "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  text-decoration: none;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+.mobile-nav-menu a:active,
+.mobile-nav-menu a:hover {
+  background: var(--soft);
+  border-left-color: var(--accent);
+}
+.mobile-nav-menu li.sub a {
+  padding-left: 28px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* 遮罩层（点击空白处关闭菜单）*/
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 8080;
+  background: rgba(0,0,0,0.25);
+}
+.mobile-nav-overlay.open { display: block; }
+
+/* ===== 响应式 — 多断点完整实现 ===== */
+
+/* 1280px+：宽屏，悬浮侧边目录显示 */
 @media (min-width: 1280px) {
   .float-toc { display: block; }
 }
 
-/* 860px–1279px：正文保持原样，目录隐藏 */
-@media (max-width: 860px) {
-  .page { margin: 0; padding: 22px 20px 36px; box-shadow: none; border: none; }
-  .cover { grid-template-columns: 1fr; }
-  .journal-bar, .footer { flex-direction: column; }
-  table { display: block; overflow-x: auto; }
-  svg { width: 100%; height: auto; }
+/* 1024px 以下：平板及手机，隐藏侧边目录，改用移动端浮动导航按钮 */
+@media (max-width: 1024px) {
+  .float-toc { display: none !important; }
+  .mobile-nav-btn { display: flex; }
 }
 
-/* 600px 以下：字号、间距进一步收窄，避免内容被挤压 */
-@media (max-width: 600px) {
+/* 1024px 以下：布局收窄 */
+@media (max-width: 1024px) {
+  .page { margin: 0 auto; padding: 28px 28px 44px; max-width: 100%; }
+}
+
+/* 768px 以下：平板竖屏 / 大手机 */
+@media (max-width: 768px) {
+  .page { margin: 0; padding: 20px 18px 36px; box-shadow: none; border: none; border-radius: 0; }
+  .cover { grid-template-columns: 1fr; gap: 16px; }
+  .meta-card { margin-top: 4px; }
+  .journal-bar { flex-direction: column; gap: 4px; font-size: 11px; padding: 10px 0; }
+  .footer { flex-direction: column; gap: 4px; font-size: 11px; }
+  h1 { font-size: 26px; }
+  h2.section-title { font-size: 21px; }
+  h3 { font-size: 17px; }
+  /* 表格横向滚动 */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -18px; padding: 0 18px; }
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
+  th, td { white-space: nowrap; }
+  /* 代码 / 公式块横滚 */
+  .formula, pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  svg { width: 100%; height: auto; }
+  .chart-container { padding: 10px; }
+  .abstract { padding: 16px 14px 14px; }
+}
+
+/* 480px 以下：大多数手机竖屏 */
+@media (max-width: 480px) {
   .page { padding: 16px 14px 28px; }
-  h1 { font-size: 24px; }
+  h1 { font-size: 22px; line-height: 1.3; }
   h2.section-title { font-size: 19px; }
   h3 { font-size: 16px; }
-  p, li, td { font-size: 14px; line-height: 1.72; }
-  .abstract { padding: 16px 14px 14px; }
+  h4 { font-size: 14.5px; }
+  p, li { font-size: 14px; line-height: 1.75; }
+  td { font-size: 13px; }
   .abstract p, .keywords { font-size: 13.5px; }
-  .meta-card dl { grid-template-columns: 72px 1fr; font-size: 13px; }
+  .abstract { padding: 14px 12px 12px; }
+  .meta-card dl { grid-template-columns: 68px 1fr; font-size: 13px; gap: 6px 10px; }
   .formula { font-size: 12.5px; padding: 10px 12px; }
   .verification { font-size: 12px; padding: 10px 12px; }
-  table { font-size: 13px; }
-  th, td { padding: 8px 10px; }
-  .journal-bar { font-size: 11px; }
-  .toc { padding: 12px 14px; }
+  table { font-size: 12.5px; }
+  th, td { padding: 7px 9px; }
+  .journal-bar { font-size: 10.5px; }
+  .toc { padding: 12px 12px; }
   .toc li { margin: 6px 0; font-size: 13.5px; }
-  .footer { font-size: 11px; }
+  .footer { font-size: 10.5px; }
+  .callout { padding: 12px 13px; }
+}
+
+/* 360px 以下：超小屏（老款 Android / 小尺寸机型）*/
+@media (max-width: 360px) {
+  .page { padding: 12px 11px 24px; }
+  h1 { font-size: 19px; }
+  h2.section-title { font-size: 17px; }
+  h3 { font-size: 15px; }
+  p, li { font-size: 13.5px; }
+  .meta-card dl { grid-template-columns: 60px 1fr; font-size: 12.5px; }
+  .formula { font-size: 12px; }
+  th, td { padding: 6px 7px; font-size: 12px; }
+}
+
+/* 横屏手机（高度 < 500px）：减少垂直留白 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .page { padding-top: 12px; padding-bottom: 20px; }
+  h1 { font-size: 20px; margin-bottom: 6px; }
+  .abstract { margin: 14px 0 12px; }
+  .verify-panel { bottom: 8px; right: 8px; }
+  .mobile-nav-btn { bottom: 8px; left: 8px; }
+}
+
+/* 深色模式移动端适配 */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+  :root {
+    --paper: #1a1d23;
+    --page:  #22262e;
+    --ink:   #e8eaf0;
+    --muted: #9ba3b2;
+    --line:  #3a3f4d;
+    --soft:  #2a2e38;
+    --soft-alt: #252930;
+    --soft-blue: #1e2535;
+    --accent: #5f9ea0;
+    --shadow: 0 18px 48px rgba(0,0,0,0.45);
+  }
+  body {
+    background: var(--paper);
+  }
+  .meta-card {
+    background: linear-gradient(180deg, #272b35 0%, #23272f 100%);
+  }
+  .abstract { background: #252930; }
+  .toc { background: var(--paper); }
+  tbody tr:nth-child(even) td { background: #282c36; }
+  .chart-container { background: #1e2228; }
+  th { background: #3a3f4d; }
 }
 
 @media print {
   body { background: #fff; }
   .page { box-shadow: none; margin: 0; max-width: none; border: none; padding: 0; }
-  .float-toc { display: none; }
+  .float-toc, .mobile-nav-btn, .mobile-nav-menu { display: none !important; }
 }
 </style>
 </head>
@@ -685,6 +866,25 @@ figcaption {
 </nav>
 
 </div><!-- /.report-layout -->
+
+<!-- 移动端浮动导航按钮（1024px 以下替代侧边目录）-->
+<div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+<nav class="mobile-nav-menu" id="mobileNavMenu" aria-label="快速导航">
+  <div class="mobile-nav-label">目录</div>
+  <ol>
+    <li><a href="#intro">1. 引言</a></li>
+    <li><a href="#theory">2. 实验原理</a></li>
+    <li><a href="#methods">3. 实验装置与方法</a></li>
+    <li><a href="#results">4. 实验结果</a></li>
+    <li><a href="#analysis">5. 数据处理与分析</a></li>
+    <li class="sub"><a href="#analysis">5.1 计算过程</a></li>
+    <li class="sub"><a href="#analysis">5.2 误差分析</a></li>
+    <li><a href="#discussion">6. 讨论</a></li>
+    <li><a href="#conclusion">7. 结论</a></li>
+    <li><a href="#references">参考文献</a></li>
+  </ol>
+</nav>
+<button class="mobile-nav-btn" id="mobileNavBtn" aria-label="打开目录" aria-expanded="false"></button>
 
 <!-- ===========================================
      悬浮验证面板
@@ -912,6 +1112,56 @@ if (ctx1) {
       e.preventDefault();
       togglePanel();
     }
+  });
+})();
+
+/* ===========================================
+   MOBILE NAV — 移动端浮动导航按钮
+   功能：
+     · 点击 ☰ 按钮展开目录菜单
+     · 点击菜单项平滑滚动到对应章节，并自动关闭菜单
+     · 点击遮罩层关闭菜单
+     · 仅在 1024px 以下生效（CSS 控制显示）
+   =========================================== */
+(function () {
+  const btn     = document.getElementById('mobileNavBtn');
+  const menu    = document.getElementById('mobileNavMenu');
+  const overlay = document.getElementById('mobileNavOverlay');
+  if (!btn || !menu) return;
+
+  function openMenu() {
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    btn.setAttribute('aria-label', '关闭目录');
+  }
+  function closeMenu() {
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-label', '打开目录');
+  }
+  function toggleMenu() {
+    btn.classList.contains('open') ? closeMenu() : openMenu();
+  }
+
+  btn.addEventListener('click', e => { e.stopPropagation(); toggleMenu(); });
+  overlay.addEventListener('click', closeMenu);
+
+  /* 点击菜单项：平滑滚动 + 关闭菜单 */
+  menu.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.getElementById(a.getAttribute('href').slice(1));
+      if (target) {
+        // 考虑固定元素遮挡，向上偏移 16px
+        const y = target.getBoundingClientRect().top + window.scrollY - 16;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+      closeMenu();
+    });
   });
 })();
 
@@ -1163,7 +1413,7 @@ const reportEditor = new ReportInlineEditor();
 .edit-toggle {
   position: fixed;
   top: 14px; left: 14px;
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   border: none;
   border-radius: 50%;
   background: var(--accent);
@@ -1184,6 +1434,18 @@ const reportEditor = new ReportInlineEditor();
   pointer-events: auto;
 }
 .edit-toggle:hover { transform: scale(1.1); }
+
+/* 移动端始终可见 */
+@media (max-width: 768px) {
+  .edit-toggle {
+    opacity: 1;
+    pointer-events: auto;
+    top: 12px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+  }
+}
 
 /* ----- 状态提示条（编辑模式时才显示）----- */
 .edit-statusbar {
@@ -1269,154 +1531,3 @@ body.edit-mode-on [contenteditable]:focus {
 | 科研记录 | [课题组/实验室] Research Record |
 | 工程报告 | [公司/项目名] Technical Report |
 | 竞赛 | [赛事名称] Competition Report |
-
----
-
-## 风格07「琥珀审查」专属扩展
-
-> 当 Python 验证发现任意偏差 > 20% 且用户确认继续生成时，**必须**在标准 HTML 骨架基础上叠加本节的全部内容。
-
-### 1. `:root` 变量覆盖（替换标准 `:root` 块）
-
-```css
-:root {
-  --paper:     #fdf8f0;
-  --page:      #fffdf8;
-  --ink:       #1c1a14;
-  --muted:     #6b6248;
-  --line:      #e0d4b8;
-  --soft:      #faf2de;
-  --soft-alt:  #fef9ec;
-  --soft-blue: #fdf4e0;
-  --accent:    #b45309;
-  --shadow:    0 18px 52px rgba(180,83,9,0.10);
-
-  /* 警告专属语义色 */
-  --warn-bg:      #fff7ed;
-  --warn-border:  #f59e0b;
-  --warn-text:    #92400e;
-  --warn-stripe:  repeating-linear-gradient(
-                    -45deg,
-                    transparent, transparent 8px,
-                    rgba(245,158,11,0.06) 8px,
-                    rgba(245,158,11,0.06) 16px
-                  );
-}
-body {
-  background:
-    radial-gradient(circle at top left, rgba(180,83,9,0.07), transparent 28%),
-    linear-gradient(180deg, #f9f1e4 0%, var(--paper) 100%);
-}
-```
-
-### 2. 覆盖样式补丁（追加到 `<style>` 末尾）
-
-```css
-/* 页面顶部橙色警示线 */
-.page        { border: 1px solid rgba(180,83,9,0.12); border-top: 4px solid var(--warn-border); }
-.abstract    { background: var(--soft-alt); border-left-color: var(--accent); }
-.callout     { background: linear-gradient(180deg,#fef9ec 0%,#fdf5e0 100%); border-left-color: var(--accent); }
-.meta-card   { background: linear-gradient(180deg,#fef9ec 0%,#faf2dc 100%); border-color: var(--warn-border); }
-.toc         { background: var(--soft); }
-th           { background: #78350f; }
-tbody tr:nth-child(even) td { background: #fdf8f0; }
-td           { border-bottom-color: #e8dccc; }
-
-/* 全局警告横幅 */
-.data-alert-banner {
-  margin: 0 0 28px;
-  padding: 14px 20px;
-  background: var(--warn-stripe), #fff7ed;
-  border: 2px solid var(--warn-border);
-  border-radius: 6px;
-  display: flex; align-items: flex-start; gap: 14px;
-}
-.data-alert-banner .banner-icon  { font-size: 22px; flex-shrink: 0; line-height: 1; margin-top: 2px; }
-.data-alert-banner .banner-body  { flex: 1; }
-.data-alert-banner .banner-title {
-  font: 700 14px/1.4 "Helvetica Neue",Arial,sans-serif;
-  color: #92400e; margin: 0 0 5px;
-}
-.data-alert-banner .banner-desc  { font-size: 13.5px; color: #78350f; margin: 0; line-height: 1.6; }
-.data-alert-banner .banner-items { margin: 8px 0 0; padding: 0 0 0 16px; font-size: 13px; color: #92400e; }
-.data-alert-banner .banner-items li { margin: 4px 0; }
-
-/* 斜纹警告框（覆盖默认 .warn-box）*/
-.warn-box {
-  margin: 22px 0;
-  padding: 18px 20px;
-  background: var(--warn-stripe), var(--warn-bg);
-  border: 1.5px solid var(--warn-border);
-  border-left: 5px solid var(--warn-border);
-  border-radius: 0 6px 6px 0;
-}
-.warn-box p      { margin: 0; font-size: 14px; color: var(--warn-text); }
-.warn-box strong { color: #78350f; }
-
-/* 行内数据徽章 */
-.badge-warn {
-  display: inline-block;
-  font: 700 11px/1 "Helvetica Neue",Arial,sans-serif;
-  padding: 2px 7px; border-radius: 10px;
-  background: #fef3c7; color: #92400e;
-  border: 1px solid #fbbf24; vertical-align: middle; margin-left: 4px;
-}
-.badge-ok {
-  display: inline-block;
-  font: 700 11px/1 "Helvetica Neue",Arial,sans-serif;
-  padding: 2px 7px; border-radius: 10px;
-  background: #dcfce7; color: #166534;
-  border: 1px solid #86efac; vertical-align: middle; margin-left: 4px;
-}
-```
-
-### 3. HTML 结构变更
-
-**journal-bar** 内 DOI 位置改为警告标记：
-
-```html
-<div class="journal-bar">
-  <div>[期刊/机构名称]</div>
-  <div style="color:#b45309;font-weight:700;">⚠ 数据待核查版本 · Data Under Review</div>
-</div>
-```
-
-**全局警告横幅**（插在 `.journal-bar` 之后、`.cover` 之前）：
-
-```html
-<div class="data-alert-banner">
-  <div class="banner-icon">⚠️</div>
-  <div class="banner-body">
-    <p class="banner-title">本报告存在需核查的数据问题，请读者注意</p>
-    <p class="banner-desc">经自动化数据校验，发现以下问题，在原作者确认修正前请谨慎引用相关数据：</p>
-    <ul class="banner-items">
-      <!-- 每个偏差 >20% 的项各写一条 li，格式如下 -->
-      <li><strong>[严重程度]：</strong>[字段名]声称值 [X] vs 计算值 [Y]，偏差约 [N] 倍。</li>
-    </ul>
-  </div>
-</div>
-```
-
-**行内数据徽章**（追加在含存疑数据的句子末尾）：
-
-```html
-已核实数据：...数值... <span class="badge-ok">✓ 校验通过</span>
-存疑数据：...数值... <span class="badge-warn">⚠ 数据存疑</span>
-```
-
-**浏览器标题**加前缀：
-
-```html
-<title>⚠ 数据待核查 — [原始报告标题]</title>
-```
-
-### 4. Chart.js 配色同步
-
-```javascript
-// 琥珀审查风格下的图表配色
-const CHART_PRIMARY   = '#b45309';   // 琥珀橙主系列
-const CHART_SECONDARY = 'rgba(180,83,9,0.28)';  // 浅琥珀对比系列
-const CHART_GRID      = '#f0e8d8';   // 暖米网格线
-const CHART_POSITIVE  = 'rgba(22,163,74,0.70)'; // 节省/正向（绿）
-const CHART_NEGATIVE  = 'rgba(180,83,9,0.75)';  // 增加/负向（琥珀）
-```
