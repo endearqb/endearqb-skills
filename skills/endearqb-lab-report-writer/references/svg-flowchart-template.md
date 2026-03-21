@@ -1,0 +1,180 @@
+# SVG流程图模板与规范
+
+## 触发条件
+
+**仅在以下情况绘制SVG流程图：**
+- 用户描述了实验步骤或操作流程（≥ 3个步骤）
+- 用户明确要求画流程图
+- 实验涉及复杂的多阶段工序
+
+**不绘制的情况：**
+- 用户只有文字描述但没有明确步骤
+- 用户没有提供流程信息
+
+---
+
+## 配色规范（与HTML报告一致）
+
+```
+步骤框背景色：
+  #f4f1e8  暖白（通用步骤）
+  #eef3f0  淡绿（关键步骤/成功路径）
+  #f0f2f6  淡蓝（数据采集步骤）
+  #fdf4f4  淡红（注意/风险步骤）
+
+边框色：   #283239（深墨色）
+箭头色：   #2f4f4f（墨绿）
+文字色：   #1d2328（主文字）
+副文字色： #5c6570（说明文字）
+字体：     Georgia serif（标题）/ Arial sans-serif（说明）
+```
+
+---
+
+## 垂直流程图模板（4步）
+
+适合：线性实验流程
+
+```svg
+<svg width="560" height="380" viewBox="0 0 560 380" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2f4f4f"/>
+    </marker>
+  </defs>
+
+  <!-- 步骤1 -->
+  <rect x="160" y="20" width="240" height="56" rx="12" fill="#f4f1e8" stroke="#283239" stroke-width="1.5"/>
+  <text x="280" y="46" text-anchor="middle" font-size="15" font-family="Georgia,serif" fill="#1d2328">[步骤1标题]</text>
+  <text x="280" y="64" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#5c6570">[说明文字]</text>
+
+  <!-- 箭头1→2 -->
+  <line x1="280" y1="76" x2="280" y2="100" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- 步骤2 -->
+  <rect x="160" y="100" width="240" height="56" rx="12" fill="#eef3f0" stroke="#283239" stroke-width="1.5"/>
+  <text x="280" y="126" text-anchor="middle" font-size="15" font-family="Georgia,serif" fill="#1d2328">[步骤2标题]</text>
+  <text x="280" y="144" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#5c6570">[说明文字]</text>
+
+  <!-- 箭头2→3 -->
+  <line x1="280" y1="156" x2="280" y2="180" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- 步骤3 -->
+  <rect x="160" y="180" width="240" height="56" rx="12" fill="#f0f2f6" stroke="#283239" stroke-width="1.5"/>
+  <text x="280" y="206" text-anchor="middle" font-size="15" font-family="Georgia,serif" fill="#1d2328">[步骤3标题]</text>
+  <text x="280" y="224" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#5c6570">[说明文字]</text>
+
+  <!-- 箭头3→4 -->
+  <line x1="280" y1="236" x2="280" y2="260" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- 步骤4 -->
+  <rect x="160" y="260" width="240" height="56" rx="12" fill="#f4f1e8" stroke="#283239" stroke-width="1.5"/>
+  <text x="280" y="286" text-anchor="middle" font-size="15" font-family="Georgia,serif" fill="#1d2328">[步骤4标题]</text>
+  <text x="280" y="304" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#5c6570">[说明文字]</text>
+</svg>
+```
+
+---
+
+## 水平流程图模板（3步）
+
+适合：简单线性流程，横向展示
+
+```svg
+<svg width="880" height="160" viewBox="0 0 880 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-h" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2f4f4f"/>
+    </marker>
+  </defs>
+
+  <!-- 步骤1 -->
+  <rect x="30" y="40" width="220" height="80" rx="14" fill="#f4f1e8" stroke="#283239" stroke-width="1.5"/>
+  <text x="140" y="76" text-anchor="middle" font-size="16" font-family="Georgia,serif" fill="#1d2328">[步骤1]</text>
+  <text x="140" y="98" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#5c6570">[说明]</text>
+
+  <!-- 箭头 -->
+  <line x1="250" y1="80" x2="330" y2="80" stroke="#2f4f4f" stroke-width="2.5" marker-end="url(#arr-h)"/>
+  <text x="290" y="68" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" fill="#2f4f4f">[条件]</text>
+
+  <!-- 步骤2 -->
+  <rect x="330" y="40" width="220" height="80" rx="14" fill="#eef3f0" stroke="#283239" stroke-width="1.5"/>
+  <text x="440" y="76" text-anchor="middle" font-size="16" font-family="Georgia,serif" fill="#1d2328">[步骤2]</text>
+  <text x="440" y="98" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#5c6570">[说明]</text>
+
+  <!-- 箭头 -->
+  <line x1="550" y1="80" x2="630" y2="80" stroke="#2f4f4f" stroke-width="2.5" marker-end="url(#arr-h)"/>
+
+  <!-- 步骤3 -->
+  <rect x="630" y="40" width="220" height="80" rx="14" fill="#f0f2f6" stroke="#283239" stroke-width="1.5"/>
+  <text x="740" y="76" text-anchor="middle" font-size="16" font-family="Georgia,serif" fill="#1d2328">[步骤3]</text>
+  <text x="740" y="98" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#5c6570">[说明]</text>
+</svg>
+```
+
+---
+
+## 带判断分支的流程图模板
+
+适合：含条件判断的实验流程（如：合格/不合格分支）
+
+```svg
+<svg width="600" height="460" viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-b" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2f4f4f"/>
+    </marker>
+  </defs>
+
+  <!-- 开始 -->
+  <rect x="200" y="20" width="200" height="50" rx="25" fill="#2f4f4f" stroke="none"/>
+  <text x="300" y="51" text-anchor="middle" font-size="15" font-family="Georgia,serif" fill="#fff">开始</text>
+
+  <line x1="300" y1="70" x2="300" y2="110" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <!-- 步骤框 -->
+  <rect x="180" y="110" width="240" height="55" rx="12" fill="#f4f1e8" stroke="#283239" stroke-width="1.5"/>
+  <text x="300" y="141" text-anchor="middle" font-size="14" font-family="Georgia,serif" fill="#1d2328">[操作步骤]</text>
+
+  <line x1="300" y1="165" x2="300" y2="205" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <!-- 判断菱形 -->
+  <polygon points="300,205 400,255 300,305 200,255" fill="#fff9e6" stroke="#c9a227" stroke-width="1.5"/>
+  <text x="300" y="259" text-anchor="middle" font-size="13" font-family="Arial,sans-serif" fill="#1d2328">[判断条件]？</text>
+
+  <!-- 是→右 -->
+  <line x1="400" y1="255" x2="480" y2="255" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr-b)"/>
+  <text x="440" y="245" text-anchor="middle" font-size="12" fill="#2f4f4f">是</text>
+  <rect x="480" y="225" width="100" height="60" rx="10" fill="#eef3f0" stroke="#283239" stroke-width="1.5"/>
+  <text x="530" y="259" text-anchor="middle" font-size="12" font-family="Arial,sans-serif" fill="#1d2328">[处理A]</text>
+
+  <!-- 否→下 -->
+  <line x1="300" y1="305" x2="300" y2="345" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr-b)"/>
+  <text x="316" y="330" font-size="12" fill="#2f4f4f">否</text>
+  <rect x="180" y="345" width="240" height="55" rx="12" fill="#fdf4f4" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="300" y="376" text-anchor="middle" font-size="14" font-family="Georgia,serif" fill="#1d2328">[处理B / 重做]</text>
+
+  <!-- 结束 -->
+  <line x1="300" y1="400" x2="300" y2="420" stroke="#2f4f4f" stroke-width="2" marker-end="url(#arr-b)"/>
+  <rect x="200" y="420" width="200" height="30" rx="15" fill="#1f2328" stroke="none"/>
+  <text x="300" y="441" text-anchor="middle" font-size="14" font-family="Georgia,serif" fill="#fff">结束</text>
+</svg>
+```
+
+---
+
+## 步骤数量适配
+
+| 步骤数 | 建议布局 | SVG尺寸参考 |
+|--------|----------|------------|
+| 2-4步  | 垂直或水平 | 560×300 或 880×160 |
+| 5-7步  | 垂直      | 560×500 |
+| 8步以上 | 分组水平+垂直混合，或拆成多个子流程图 |
+| 含分支 | 带菱形判断节点 | 600×460 |
+
+---
+
+## 步骤框间距计算
+
+每个步骤框高度56px，步骤框间距24px（箭头区域），则：
+- N步垂直流程图总高 ≈ N × 80 + 20（顶部留白）
