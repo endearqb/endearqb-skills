@@ -1,0 +1,32 @@
+# OS / editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node / frontend tooling
+node_modules/
+dist/
+build/
+.vite/
+
+# Logs and local env
+*.log
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+
+# Local temp files
+tmp/
+temp/
