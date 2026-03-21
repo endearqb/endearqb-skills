@@ -1,6 +1,8 @@
 # endearqb-skills
 
-An open-source collection of reusable Codex skills maintained in this repository.
+[English](README.md) | [简体中文](README.zh-CN.md)
+
+An open-source collection of reusable Agent Skills maintained in this repository.
 
 ## Overview
 
@@ -25,7 +27,7 @@ Each skill directory may contain:
 
 ## Usage
 
-Clone the repository and use the skill directories as local skill packages in your Codex workflow.
+Clone the repository and use the skill directories as local skill packages in your Agent Skills workflow.
 
 ## License
 

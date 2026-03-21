@@ -1,6 +1,8 @@
 # endearqb-skills
 
-这是一个用于存放可复用 Codex Skills 的开源仓库。
+[English](README.md) | [简体中文](README.zh-CN.md)
+
+这是一个用于存放可复用 Agent Skills 的开源仓库。
 
 ## 仓库说明
 
@@ -25,7 +27,7 @@ skills/
 
 ## 使用方式
 
-克隆本仓库后，可将各个 skill 目录作为本地技能包，在 Codex 工作流中直接使用。
+克隆本仓库后，可将各个 skill 目录作为本地技能包，在 Agent Skills 工作流中直接使用。
 
 ## 许可证
 
