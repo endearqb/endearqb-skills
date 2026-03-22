@@ -10,6 +10,7 @@
 
 - `endearqb-lab-report-writer`：用于实验/报告类内容撰写与校验的技能，附带参考资料与校验脚本。
 - `endearqb-frontend-dataviz`：用于前端数据可视化工作的技能，包含图表示例、配色方案、图标等参考资料。
+- `endearqb-community-profiler`：用于群聊记录分析的技能，可生成成员画像、识别核心贡献者、评估社区健康度、总结聊天内容。
 
 ## 目录结构
 
@@ -17,6 +18,7 @@
 skills/
   endearqb-lab-report-writer/
   endearqb-frontend-dataviz/
+  endearqb-community-profiler/
 ```
 
 每个 skill 目录通常包含：

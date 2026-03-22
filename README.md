@@ -10,6 +10,7 @@ This repository currently includes:
 
 - `endearqb-lab-report-writer`: A skill for writing and verifying lab-style reports with supporting references and verification scripts.
 - `endearqb-frontend-dataviz`: A skill for frontend data visualization work with design references such as chart examples, palettes, and pictograph icons.
+- `endearqb-community-profiler`: A skill for analyzing chat records to generate member profiles, identify key contributors, assess community health, and summarize chat content.
 
 ## Repository Structure
 
@@ -17,6 +18,7 @@ This repository currently includes:
 skills/
   endearqb-lab-report-writer/
   endearqb-frontend-dataviz/
+  endearqb-community-profiler/
 ```
 
 Each skill directory may contain:
