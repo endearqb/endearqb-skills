@@ -389,6 +389,8 @@ figcaption {
   border: 1px solid var(--line);
 }
 
+.chart-container canvas { min-height: 200px; }
+
 /* ===== 参考文献 ===== */
 .references {
   margin-top: 38px;
@@ -636,6 +638,7 @@ figcaption {
   .formula, pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   svg { width: 100%; height: auto; }
   .chart-container { padding: 10px; }
+  .chart-container canvas { min-height: 220px; }
   .abstract { padding: 16px 14px 14px; }
 }
 
@@ -934,6 +937,10 @@ figcaption {
    CHART.JS 初始化 — SWD原则配置
    注意：每次生成报告时，根据实际数据填写labels和datasets
    =========================================== */
+
+/* 移动端检测：≤768px 时关闭宽高比联动，由 CSS min-height 控制高度 */
+const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
 const ctx1 = document.getElementById('chart1');
 if (ctx1) {
   new Chart(ctx1, {
@@ -952,6 +959,7 @@ if (ctx1) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: !isMobile,
       plugins: {
         legend: { display: false },
         title: { display: false }
