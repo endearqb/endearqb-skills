@@ -1,7 +1,7 @@
 ---
 name: lab-report-writer
 metadata:
-  version: 1.3.1
+  version: 1.5.0
 description: |
   撰写期刊风格的实验报告，支持理工科实验课报告、科研论文级实验记录、工程项目技术报告、竞赛展示用报告等全场景。
   用户提供实验信息、数据、方法描述后，生成结构完整、排版专业的报告，并附带Python数据验证脚本对所有计算结论进行复核。
@@ -377,82 +377,219 @@ const swdDefaults = {
 
 ## 第六步：HTML生成策略
 
-### 技术路线
+### 架构：内容与模板分离
 
-**直接生成HTML**（不经过Markdown中转）——原因：
+所有报告统一使用**分段生成 → 脚本拼装**流程。CSS 和 JS 存放在 `assets/` 目录，由 `build_html.py` 直接读取，**完全不经过对话 token**。
 
--   HTML允许精确控制CSS，Markdown转HTML会丢失样式细节
-    
--   Chart.js和SVG需要直接嵌入HTML
-    
--   避免转换工具引入的格式噪音
-    
-
-### HTML模板结构
-
-完整CSS和HTML骨架参见 `references/html-template.md`
-
-关键设计要素（与参考文件一致）：
-
-```css
-:root {
-  --paper: #fbfaf6;
-  --page:  #ffffff;
-  --ink:   #1f2328;
-  --muted: #5c6570;
-  --line:  #d7d0c3;
-  --soft:  #f5f1e7;
-  --soft-alt: #eef4f1;
-  --soft-blue: #f3f6fb;
-  --accent: #2f4f4f;
-}
-/* 字体：Georgia + Noto Serif SC（中文衬线） */
-/* 正文：line-height: 1.82; text-align: justify */
-/* 页面：max-width: 980px; 有阴影的白色卡片 */
+```
+lab-report-writer/
+├── assets/
+│   ├── report.css   ← 完整样式（含响应式、深色模式、编辑器）
+│   └── report.js    ← 所有交互（目录高亮、验证面板、内联编辑器）
+├── scripts/
+│   └── build_html.py  ← 纯拼接器，无任何 CSS/JS 逻辑
+└── references/
+    └── html-template.md  ← 给 Claude 读的结构参考（不参与构建）
 ```
 
-### 风格选择（默认 or 自定义）
+### 生成流程（固定，三个阶段）
 
-**默认行为**：不说明风格时，使用「暖墨纸」默认风格，直接参照 `references/html-template.md` 的 CSS。
+#### 阶段一：依次生成并保存内容文件
 
-**触发自定义风格**：用户在 prompt 中提到以下任一词时，读取 `references/style-constitution.md` 并应用对应风格：
+**①** `report-body.html` — 报告正文 HTML 片段（直接生成 HTML，不经 Markdown 转换）
 
--   颜色词：深色、暗色、黑色、白色、简洁、极简、红色、绿色……
+结构约定（必须遵守，脚本靠这些 id/class 注入内容）：
+
+```html
+<!-- 布局容器 -->
+<div class="report-layout">
+<main class="page">
+
+  <!-- 期刊顶栏 -->
+  <div class="journal-bar">
+    <div>[课程/机构]</div>
+    <div>Report Date: [日期]</div>
+  </div>
+
+  <!-- 封面 -->
+  <section class="cover">
+    <div>
+      <h1>[标题]</h1>
+      <p class="subtitle">[副标题]</p>
+    </div>
+    <aside class="meta-card">
+      <h2>Report Info</h2>
+      <dl>
+        <dt>作者</dt><dd>[姓名]</dd>
+        <dt>日期</dt><dd>[日期]</dd>
+        <!-- 按场景增减字段 -->
+      </dl>
+    </aside>
+  </section>
+
+  <!-- 摘要 -->
+  <section class="abstract">
+    <h2>Abstract</h2>
+    <p>[摘要内容]</p>
+    <p class="keywords"><strong>关键词：</strong>[词1]；[词2]</p>
+  </section>
+
+  <!-- 目录（inline，与正文同侧） -->
+  <nav class="toc"><h2>Contents</h2><ol>
+    <li><a href="#intro">1. 引言</a></li>
+    <!-- ... -->
+  </ol></nav>
+
+  <div class="divider"></div>
+
+  <!-- 正文各节：id 必须与目录 href 一致 -->
+  <section id="intro">
+    <h2 class="section-title">1. 引言</h2>
+    <p>...</p>
+  </section>
+
+  <!-- SVG 流程图插入位置（若有） -->
+  <section id="methods">
+    <h2 class="section-title">3. 实验装置与方法</h2>
+    <figure>
+      <!-- flowchart.svg 内容直接粘贴至此 -->
+      <figcaption>图 1. 实验流程图</figcaption>
+    </figure>
+  </section>
+
+  <!-- 图表占位（canvas id 供 charts-init.js 初始化） -->
+  <section id="results">
+    <h2 class="section-title">4. 实验结果</h2>
+    <figure>
+      <div class="chart-container"><canvas id="chart1"></canvas></div>
+      <figcaption>图 2. [描述性图题]</figcaption>
+    </figure>
+  </section>
+
+  <!-- 参考文献 -->
+  <section id="references" class="references">
+    <h2>参考文献</h2>
+    <ol>
+      <li id="ref-1">...</li>
+    </ol>
+  </section>
+
+  <footer class="footer">
+    <span>[课程/机构]</span><span>生成日期：[日期]</span>
+  </footer>
+
+</main>
+
+<!-- 宽屏悬浮目录（与目录 href 保持一致） -->
+<nav class="float-toc" id="floatToc" aria-label="文章目录">
+  <p class="float-toc-label">目录</p>
+  <ol><!-- 与 inline toc 相同条目 --></ol>
+</nav>
+</div>
+
+<!-- 移动端导航 -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+<nav class="mobile-nav-menu" id="mobileNavMenu" aria-label="快速导航">
+  <div class="mobile-nav-label">目录</div>
+  <ol><!-- 同上 --></ol>
+</nav>
+<button class="mobile-nav-btn" id="mobileNavBtn" aria-label="打开目录" aria-expanded="false"></button>
+
+<!-- 验证面板（build_html.py 注入验证内容到 pre 元素） -->
+<aside id="verifyPanel" class="verify-panel" aria-label="数据验证摘要">
+  <button class="verify-panel-header" id="verifyToggle" aria-expanded="false">
+    <span class="verify-panel-icon">🔬</span>
+    <span class="verify-panel-title">验证摘要</span>
+    <span class="verify-panel-badge" id="verifyBadge"></span>
+    <span class="verify-panel-chevron">▲</span>
+  </button>
+  <div class="verify-panel-body" id="verifyBody">
+    <div class="verify-section" id="verifyStats">
+      <div class="verify-section-label">📊 统计摘要</div>
+      <pre class="verify-pre" id="verifyStatsContent">[暂无统计数据]</pre>
+    </div>
+    <div class="verify-section" id="verifyCalc">
+      <div class="verify-section-label">🧮 计算验证</div>
+      <pre class="verify-pre" id="verifyCalcContent">[暂无计算验证数据]</pre>
+    </div>
+    <div class="verify-section verify-warn-section" id="verifyWarnSection" style="display:none">
+      <div class="verify-section-label">⚠ 偏差汇总</div>
+      <pre class="verify-pre" id="verifyWarnContent"></pre>
+      <p class="verify-note" id="verifyNote"></p>
+    </div>
+  </div>
+</aside>
+```
+
+**②** `charts-init.js` — 仅当有图表时生成，内含 Chart.js 初始化代码：
+
+```javascript
+// SWD原则配置；canvas id 与 report-body.html 中保持一致
+const isMobile = window.matchMedia('(max-width: 768px)').matches;
+const ctx1 = document.getElementById('chart1');
+if (ctx1) {
+  new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: [/* x轴标签 */],
+      datasets: [{ data: [/* 数据 */], borderColor: '#2f4f4f', borderWidth: 2, tension: 0.3 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: !isMobile,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, border: { display: false } },
+        y: { grid: { color: '#f0ece2' }, border: { display: false } }
+      }
+    }
+  });
+}
+```
+
+**③** `verify-output.txt` — 运行 `auto_verify.py` 后的输出，格式：
+
+```
+【统计摘要】
+...
+【计算验证】
+...
+```
+
+（SVG 流程图直接内嵌在 `report-body.html` 的对应 `<figure>` 中，不单独保存文件。）
+
+#### 阶段二：运行拼装脚本
+
+```bash
+python scripts/build_html.py   --body    report-body.html   --output  /mnt/user-data/outputs/report.html   --charts  charts-init.js   --verify  verify-output.txt
+```
+
+脚本做的事极其简单：`<html head> + assets/report.css + body_html + charts-init.js + assets/report.js`，无任何格式转换逻辑。
+
+#### 阶段三：输出文件
+
+```bash
+present_files /mnt/user-data/outputs/report.html
+```
+
+### 风格说明
+
+`assets/report.css` 已包含：
+
+-   默认暖墨纸风格（`:root` CSS 变量）
     
--   场景词：工程报告、竞赛展示、答辩、打印……
+-   响应式断点（1280 / 1024 / 768 / 480 / 360px）
     
--   风格词：学院风、复古、现代、国际化、极简主义……
+-   系统深色模式自动适配（`@media prefers-color-scheme: dark`）
     
--   直接指定：「用深蓝色风格」「参考Nature杂志配色」……
+-   打印优化
     
 
-**自定义风格流程**：`style-constitution.md` 第四节「自定义风格生成流程」。
+**需要更换配色风格时**：读取 `references/style-constitution.md`，在 `report-body.html` 的 `<style>` 块内覆盖 `:root` 变量即可（`build_html.py` 会将其内联进最终 HTML，优先级高于 `report.css`）。
 
-### 内联编辑器（每份HTML报告必须包含）
+<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>输出格式</p></th><th colspan="1" rowspan="1"><p>生成方式</p></th><th colspan="1" rowspan="1"><p>何时使用</p></th></tr><tr><td colspan="1" rowspan="1"><p>HTML</p></td><td colspan="1" rowspan="1"><p>上述三阶段流程</p></td><td colspan="1" rowspan="1"><p>默认，所有报告</p></td></tr><tr><td colspan="1" rowspan="1"><p>Markdown</p></td><td colspan="1" rowspan="1"><p>直接生成</p></td><td colspan="1" rowspan="1"><p>用户明确要求纯文本草稿</p></td></tr><tr><td colspan="1" rowspan="1"><p>Word (.docx)</p></td><td colspan="1" rowspan="1"><p>读取 docx skill</p></td><td colspan="1" rowspan="1"><p>用户要求可编辑 Word 文档</p></td></tr></tbody></table>
 
-所有生成的HTML报告都**默认内置内联编辑器**，无需用户额外选择。特点：
-
--   **触发**：鼠标悬停页面左上角（隐形热区）→ 绿色 ✏️ 按钮浮现 → 点击；或直接按 `E` 键
-    
--   **编辑**：进入编辑模式后，点击任意段落/标题/列表项即可直接修改文字
-    
--   **自动保存**：每次失焦自动写入 `localStorage`，刷新页面不丢失
-    
--   **导出**：`Ctrl+S` / `Cmd+S` 将当前内容导出为新 HTML 文件（`报告名-edited.html`）
-    
--   **退出**：再按 `E` 键或点击 ✅ 按钮退出编辑模式
-    
--   **不可编辑区域**：Python验证摘要框（`.verification`）、公式块（`.formula`）、图注（`figcaption`）、参考文献（`.references`）
-    
--   **打印安全**：编辑器 UI 在打印/PDF导出时自动隐藏
-    
-
-完整实现代码见 `references/html-template.md` 末尾的 `ReportInlineEditor` 类。  
-每次生成HTML报告时，必须将该 `<script>` 块和对应 `<style>` 块完整复制到报告末尾。
-
-<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>格式</p></th><th colspan="1" rowspan="1"><p>生成方式</p></th><th colspan="1" rowspan="1"><p>适用时机</p></th></tr><tr><td colspan="1" rowspan="1"><p>HTML</p></td><td colspan="1" rowspan="1"><p>直接生成</p></td><td colspan="1" rowspan="1"><p>默认输出，最优质量</p></td></tr><tr><td colspan="1" rowspan="1"><p>Markdown</p></td><td colspan="1" rowspan="1"><p>直接生成</p></td><td colspan="1" rowspan="1"><p>用户明确要求，或作为草稿</p></td></tr><tr><td colspan="1" rowspan="1"><p>Word (.docx)</p></td><td colspan="1" rowspan="1"><p>读取docx skill</p></td><td colspan="1" rowspan="1"><p>用户要求可编辑文档</p></td></tr></tbody></table>
-
-若用户提供Markdown/Word，应提示："我可以将这份报告转换为期刊风格的HTML版本，视觉效果更专业，是否需要？"
+若用户提供 Markdown/Word，提示："可以将这份报告转换为期刊风格 HTML 版本，是否需要？"
 
 * * *
 
@@ -460,31 +597,37 @@ const swdDefaults = {
 
 生成报告前，逐项确认：
 
+**阶段一：内容生成**
+
 - [ ] 场景类型已识别，章节结构已裁剪
 - [ ] 必须信息已收集，缺失项已用占位符处理
-- [ ] 有CSV/表格数据 → 已运行 `auto_verify.py`，【统计摘要】块嵌入 `#verifyStatsContent`，【计算验证】块嵌入 `#verifyCalcContent`
-- [ ] 有数值+公式（无CSV）→ 已生成并运行专项验证脚本，输出按区域嵌入同上两个 pre 块
-- [ ] 验证面板状态正确：有偏差→面板橙色边框+自动展开；全通过→折叠+绿色徽章
-- [ ] HTML 报告正文 Analysis 节**无**「数据验证」子章节
-- [ ] Markdown 报告参考文献后已追加「## 附录：数据验证」节，嵌入脚本输出原文
-- [ ] 偏差 > 5% 的项 → 「讨论」节已补充偏差分析段落
-- [ ] 偏差 > 20% → 已在生成报告前告知用户并确认继续
+- [ ] `report-body.html` 已生成：含 `.report-layout`、`.page`、`.float-toc`、移动端导航、验证面板骨架
+- [ ] `report-body.html` 中所有 `section id` 与目录 `a[href]` 一一对应
+- [ ] 有CSV/表格数据 → 已运行 `auto_verify.py`，输出保存为 `verify-output.txt`
+- [ ] 有数值+公式（无CSV）→ 已生成并运行专项验证脚本，输出同格式保存
+- [ ] `report-body.html` 正文 Analysis 节**无**「数据验证」子章节
 - [ ] 正文 Results/Analysis 节未出现任何用计算值替换原始数据的情况
+- [ ] 有图表 → 已生成 `charts-init.js`，canvas id 与正文 `<canvas id="...">` 一致
+- [ ] SVG 流程图（若有）已直接内嵌进 `report-body.html` 对应 `<figure>` 中
+- [ ] 偏差 > 20% → 已在生成报告前告知用户并确认继续
+- [ ] 偏差 > 5% → 「讨论」节已补充偏差分析段落
 - [ ] 引言、原理、讨论各节已通过 web\_search 搜索权威文献
 - [ ] 所有引用均有可访问URL或DOI，无虚构文献
 - [ ] 参考文献按 GB/T 7714-2015 格式排列，含链接
-- [ ] 有数据 → 已生成Chart.js图表，遵循SWD原则
-- [ ] 有流程描述 → 已绘制SVG流程图
-- [ ] 无数据 → 跳过图表，不生成占位图
-- [ ] HTML报告末尾已包含完整的 `ReportInlineEditor` 类及其CSS（从 html-template.md 复制）
-- [ ] 验证编辑器不可编辑区域已正确排除（.verification/.formula/figcaption/.references）
-- [ ] 报告包含：标题栏、摘要、目录、正文各节、参考文献、页脚
-- [ ] 输出文件已保存到 `/mnt/user-data/outputs/`
+
+**阶段二：拼装**
+
+- [ ] 已运行 `python scripts/build_html.py --body report-body.html --output /mnt/user-data/outputs/report.html [--charts charts-init.js] [--verify verify-output.txt]`
+- [ ] 脚本输出无 `[WARN]`（assets/report.css 和 report.js 均已找到）
+
+**阶段三：输出**
+
+- [ ] 已调用 `present_files` 向用户提供 HTML 文件下载
 
 * * *
 
 ## 参考文件索引
 
-<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>文件</p></th><th colspan="1" rowspan="1"><p>内容</p></th><th colspan="1" rowspan="1"><p>何时读取</p></th></tr><tr><td colspan="1" rowspan="1"><p><code>references/html-template.md</code></p></td><td colspan="1" rowspan="1"><p>完整HTML骨架和CSS</p></td><td colspan="1" rowspan="1"><p>每次生成HTML时必读</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/style-constitution.md</code></p></td><td colspan="1" rowspan="1"><p>风格宪法框架 + 6套预置风格</p></td><td colspan="1" rowspan="1"><p>用户指定非默认风格时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/svg-flowchart-template.md</code></p></td><td colspan="1" rowspan="1"><p>SVG流程图模板和规范</p></td><td colspan="1" rowspan="1"><p>需要绘制流程图时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/swd-chartjs-examples.md</code></p></td><td colspan="1" rowspan="1"><p>SWD原则Chart.js示例</p></td><td colspan="1" rowspan="1"><p>需要生成图表时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/gbt7714-reference-guide.md</code></p></td><td colspan="1" rowspan="1"><p>GB/T 7714格式详细规范与示例</p></td><td colspan="1" rowspan="1"><p>撰写参考文献节时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/auto_verify.py</code></p></td><td colspan="1" rowspan="1"><p>CSV/表格数据自动验证脚本</p></td><td colspan="1" rowspan="1"><p>有CSV或粘贴表格数据时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/verify_data.py</code></p></td><td colspan="1" rowspan="1"><p>手动填写的验证脚本模板</p></td><td colspan="1" rowspan="1"><p>有数值+公式但无CSV时</p></td></tr></tbody></table>
+<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>文件</p></th><th colspan="1" rowspan="1"><p>内容</p></th><th colspan="1" rowspan="1"><p>何时读取</p></th></tr><tr><td colspan="1" rowspan="1"><p><code>references/html-template.md</code></p></td><td colspan="1" rowspan="1"><p>HTML结构参考骨架</p></td><td colspan="1" rowspan="1"><p>生成 <code>report-body.html</code> 时参照结构</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/style-constitution.md</code></p></td><td colspan="1" rowspan="1"><p>风格宪法框架 + 6套预置风格</p></td><td colspan="1" rowspan="1"><p>用户指定非默认风格时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/svg-flowchart-template.md</code></p></td><td colspan="1" rowspan="1"><p>SVG流程图模板和规范</p></td><td colspan="1" rowspan="1"><p>需要绘制流程图时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/swd-chartjs-examples.md</code></p></td><td colspan="1" rowspan="1"><p>SWD原则Chart.js示例</p></td><td colspan="1" rowspan="1"><p>生成 <code>charts-init.js</code> 时参照</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/gbt7714-reference-guide.md</code></p></td><td colspan="1" rowspan="1"><p>GB/T 7714格式详细规范与示例</p></td><td colspan="1" rowspan="1"><p>撰写参考文献节时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>assets/report.css</code></p></td><td colspan="1" rowspan="1"><p>完整CSS（样式/响应式/深色模式/编辑器）</p></td><td colspan="1" rowspan="1"><p>由 <code>build_html.py</code> 自动读取，Claude不需读</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>assets/report.js</code></p></td><td colspan="1" rowspan="1"><p>所有交互JS（目录/验证面板/内联编辑器）</p></td><td colspan="1" rowspan="1"><p>由 <code>build_html.py</code> 自动读取，Claude不需读</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/auto_verify.py</code></p></td><td colspan="1" rowspan="1"><p>CSV/表格数据自动验证脚本</p></td><td colspan="1" rowspan="1"><p>有CSV或粘贴表格数据时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/verify_data.py</code></p></td><td colspan="1" rowspan="1"><p>手动填写的验证脚本模板</p></td><td colspan="1" rowspan="1"><p>有数值+公式但无CSV时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/build_html.py</code></p></td><td colspan="1" rowspan="1"><p>HTML拼装脚本</p></td><td colspan="1" rowspan="1"><p>阶段二运行</p></td></tr></tbody></table>
 
 * * *
