@@ -8,15 +8,17 @@ build_html.py - Lab Report HTML Assembler
   1. 读取正文 HTML 片段（支持单文件或多分段合并）
   2. 注入 SVG 流程图（扫描 data-svg-src 占位符，替换为 SVG 文件内容）
   3. 读取 assets/report.css  （样式，直接内嵌，不解析）
-  4. 读取 assets/report.js   （交互脚本，直接内嵌，不解析）
-  5. 读取 charts-init.js     （图表初始化，Claude 生成，可选）
-  6. 读取 verify-output.txt  （Python 验证摘要，可选）
-  7. 拼装成完整 HTML 输出
+  4. 注入主题 CSS 覆盖       （--theme 参数，内置6套预置风格，可选）
+  5. 读取 assets/report.js   （交互脚本，直接内嵌，不解析）
+  6. 读取 charts-init.js     （图表初始化，Claude 生成，可选）
+  7. 读取 verify-output.txt  （Python 验证摘要，可选）
+  8. 拼装成完整 HTML 输出
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 用法 A（单文件，传统模式）：
   python build_html.py --body   report-body.html \
                        --output /mnt/user-data/outputs/report.html \
+                       [--theme  dark] \
                        [--charts  charts-init.js] \
                        [--verify  verify-output.txt] \
                        [--svg-dir svgs/]
@@ -24,6 +26,7 @@ build_html.py - Lab Report HTML Assembler
 用法 B（多分段，按文件名排序自动合并）：
   python build_html.py --body-dir ./body-parts/ \
                        --output /mnt/user-data/outputs/report.html \
+                       [--theme  olive] \
                        [--charts  charts-init.js] \
                        [--verify  verify-output.txt] \
                        [--svg-dir svgs/]
@@ -43,6 +46,20 @@ build_html.py - Lab Report HTML Assembler
 用法 C（多分段，手动指定顺序）：
   python build_html.py --body-parts body-01.html body-02.html body-03.html \
                        --output /mnt/user-data/outputs/report.html
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+主题参数 --theme：
+
+可选值（省略或 default 时使用 report.css 内置默认风格，无额外开销）：
+  default       暖墨纸（默认，无需此参数）
+  dark          午夜藏青 Midnight Navy
+  clean         净白简约 Clean White
+  olive         橄榄学报 Olive Scholar
+  engineering   砖红工程 Engineering Red
+  graphite      石墨极简 Graphite Minimal
+
+主题 CSS 以 <style> 块注入 <head>，优先级高于 report.css。
+Claude 只需传 --theme 参数，无需读取或内联任何 CSS 内容。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SVG 注入机制：
@@ -76,6 +93,150 @@ import argparse, os, re, sys
 from pathlib import Path
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# 内置主题 CSS（对应 references/style-constitution.md 预置风格库）
+# Claude 只需传 --theme 参数，无需读取或内联任何 CSS。
+# ──────────────────────────────────────────────────────────────────────────────
+THEMES = {
+    'default': '',   # 使用 report.css 内置默认暖墨纸，无额外 CSS
+
+    'dark': """\
+/* ===== 主题：午夜藏青 Midnight Navy ===== */
+:root {
+  --paper:     #0d1117;
+  --page:      #161b22;
+  --ink:       #e6edf3;
+  --muted:     #7d8590;
+  --line:      #30363d;
+  --soft:      #1c2128;
+  --soft-alt:  #1a2332;
+  --soft-blue: #172033;
+  --accent:    #c9a84c;
+  --shadow:    0 18px 48px rgba(0,0,0,0.40);
+}
+body {
+  background:
+    radial-gradient(circle at top left, rgba(201,168,76,0.06), transparent 30%),
+    linear-gradient(180deg, #090d13 0%, var(--paper) 100%);
+  font-family: "Source Serif 4", Georgia, "Noto Serif SC", serif;
+  line-height: 1.80;
+}
+th { background: #21262d; color: #e6edf3; }
+tbody tr:nth-child(even) td { background: #1c2128; }
+.abstract { background: #1a2332; border-left-color: var(--accent); }
+.formula { background: var(--soft-blue); border-color: #2d3748; }
+.verification { background: #162118; border-color: #2d5a27; border-left-color: #3fb950; }
+.callout { background: linear-gradient(180deg,#1a2a1a 0%,#162820 100%); border-left-color: #3f6b3a; }
+.toc { background: var(--soft); border-color: var(--line); }
+.chart-container { background: #1c2128; border-color: var(--line); }
+a { color: var(--accent); }""",
+
+    'clean': """\
+/* ===== 主题：净白简约 Clean White ===== */
+:root {
+  --paper:     #f8f9fa;
+  --page:      #ffffff;
+  --ink:       #212529;
+  --muted:     #6c757d;
+  --line:      #dee2e6;
+  --soft:      #f1f3f5;
+  --soft-alt:  #e8f4fd;
+  --soft-blue: #ebf5fb;
+  --accent:    #1a6eb5;
+  --shadow:    0 8px 32px rgba(0,0,0,0.08);
+}
+body {
+  background: var(--paper);
+  font-family: "Lora", Georgia, "Noto Serif SC", serif;
+  line-height: 1.78;
+}
+.page { border: none; border-top: 3px solid var(--accent); }
+.callout { background: linear-gradient(180deg,#e8f4fd 0%,#f0f7ff 100%); border-left-color: #1a6eb5; }
+.abstract { background: #f0f7ff; border-left-color: var(--ink); }""",
+
+    'olive': """\
+/* ===== 主题：橄榄学报 Olive Scholar ===== */
+:root {
+  --paper:     #f7f5ef;
+  --page:      #fefdfb;
+  --ink:       #2c2a1e;
+  --muted:     #6b6550;
+  --line:      #ccc9b4;
+  --soft:      #eeeade;
+  --soft-alt:  #edf0e5;
+  --soft-blue: #edf2e8;
+  --accent:    #4a6741;
+  --shadow:    0 16px 44px rgba(44,42,30,0.11);
+}
+body {
+  background:
+    radial-gradient(circle at top left, rgba(74,103,65,0.07), transparent 30%),
+    linear-gradient(180deg, #efede4 0%, var(--paper) 100%);
+  font-family: Georgia, "Noto Serif SC", serif;
+  line-height: 1.84;
+}
+.callout { background: linear-gradient(180deg,#edf0e5 0%,#f4f6ef 100%); border-left-color: #4a6741; }
+tbody tr:nth-child(even) td { background: #f3f1e8; }
+td { border-bottom-color: #ddd8c4; }""",
+
+    'engineering': """\
+/* ===== 主题：砖红工程 Engineering Red ===== */
+:root {
+  --paper:     #f9f7f5;
+  --page:      #ffffff;
+  --ink:       #1c1c1e;
+  --muted:     #636366;
+  --line:      #d1cbc3;
+  --soft:      #f4eeea;
+  --soft-alt:  #fdf1ee;
+  --soft-blue: #f5f5f7;
+  --accent:    #9b2335;
+  --shadow:    0 12px 40px rgba(28,28,30,0.10);
+}
+body {
+  background:
+    radial-gradient(circle at top left, rgba(155,35,53,0.05), transparent 30%),
+    linear-gradient(180deg, #f2efec 0%, var(--paper) 100%);
+  font-family: Georgia, "Noto Serif SC", serif;
+  line-height: 1.80;
+}
+.callout { background: linear-gradient(180deg,#fdf1ee 0%,#fdf8f7 100%); border-left-color: #9b2335; }
+tbody tr:nth-child(even) td { background: #faf8f6; }""",
+
+    'graphite': """\
+/* ===== 主题：石墨极简 Graphite Minimal ===== */
+:root {
+  --paper:     #f5f5f5;
+  --page:      #ffffff;
+  --ink:       #1a1a1a;
+  --muted:     #666666;
+  --line:      #cccccc;
+  --soft:      #ebebeb;
+  --soft-alt:  #f0f0f0;
+  --soft-blue: #f0f0f4;
+  --accent:    #333333;
+  --shadow:    0 8px 28px rgba(0,0,0,0.08);
+}
+body {
+  background: var(--paper);
+  font-family: Georgia, "Noto Serif SC", serif;
+  line-height: 1.80;
+}
+.page { border: 1px solid var(--line); }
+.abstract { background: #f5f5f5; border-left-color: var(--ink); }
+.callout { background: #f0f0f0; border-left-color: #666; }""",
+}
+
+THEME_ALIASES = {
+    '暖墨纸': 'default', '默认': 'default',
+    '午夜藏青': 'dark',  '极夜深色': 'dark',   'midnight': 'dark',
+    '净白简约': 'clean', 'white': 'clean',
+    '橄榄学报': 'olive',
+    '砖红工程': 'engineering', 'red': 'engineering',
+    '石墨极简': 'graphite', '石墨': 'graphite',
+}
+
+
 def parse_args():
     p = argparse.ArgumentParser(description='Assemble lab report HTML')
     grp = p.add_mutually_exclusive_group(required=True)
@@ -84,6 +245,8 @@ def parse_args():
     grp.add_argument('--body-parts', nargs='+', metavar='FILE',
                      help='手动指定多个正文 HTML 片段，按参数顺序合并')
     p.add_argument('--output',  default='report.html', help='输出文件路径')
+    p.add_argument('--theme',   default='default',
+                   help='色彩主题：default/dark/clean/olive/engineering/graphite（默认 default）')
     p.add_argument('--charts',  default=None, help='Chart.js 初始化脚本（可选）')
     p.add_argument('--verify',  default=None, help='Python 验证摘要文本（可选）')
     p.add_argument('--title',   default=None, help='报告标题（页面 <title> 用）')
@@ -235,7 +398,19 @@ def slot_verify(body_html, verify_text):
     return body_html
 
 
-def assemble(body_html, css, js, charts_js, verify_text, title):
+def get_theme_css(theme_key):
+    """Resolve theme key/alias to CSS string. Returns '' for default/unknown."""
+    key = THEME_ALIASES.get(theme_key, theme_key).lower()
+    if key not in THEMES:
+        print(f'[WARN] Unknown theme "{theme_key}", falling back to default.', file=sys.stderr)
+        return ''
+    css = THEMES[key]
+    if css:
+        print(f'[build_html] Theme: {theme_key} ({key})')
+    return css
+
+
+def assemble(body_html, css, theme_css, js, charts_js, verify_text, title):
     body_html = slot_verify(body_html, verify_text)
 
     if not title:
@@ -243,6 +418,7 @@ def assemble(body_html, css, js, charts_js, verify_text, title):
         title = re.sub(r'<[^>]+>', '', m.group(1)).strip() if m else '实验报告'
 
     charts_block = f'<script>\n{charts_js}\n</script>' if charts_js.strip() else ''
+    theme_block  = f'<style>\n{theme_css}\n</style>' if theme_css.strip() else ''
 
     return f'''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -259,6 +435,7 @@ def assemble(body_html, css, js, charts_js, verify_text, title):
 <style>
 {css}
 </style>
+{theme_block}
 </head>
 <body>
 
@@ -289,11 +466,12 @@ def main():
     assets_dir  = find_assets_dir(args.assets)
     css         = read_file(assets_dir / 'report.css', 'report.css')
     js          = read_file(assets_dir / 'report.js',  'report.js')
+    theme_css   = get_theme_css(args.theme)
     charts_js   = read_file(args.charts,  '图表脚本') if args.charts else ''
     verify_text = read_file(args.verify,  '验证摘要') if args.verify else ''
 
     print(f'[build_html] assets={assets_dir}, svg_dir={svg_dir}')
-    html = assemble(body_html, css, js, charts_js, verify_text, args.title)
+    html = assemble(body_html, css, theme_css, js, charts_js, verify_text, args.title)
 
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
