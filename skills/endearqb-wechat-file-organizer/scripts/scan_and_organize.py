@@ -77,10 +77,11 @@ def is_junk_file(filepath: Path) -> bool:
     )
 
 
-def scan_files(source_dir: str, since_month: str = None) -> tuple:
+def scan_files(source_dir: str, since_month: str = None, until_month: str = None) -> tuple:
     """
     扫描源目录，返回 (有效文件列表, 跳过数)
     since_month: "YYYY-MM" 格式，只返回该月及之后的文件
+    until_month: "YYYY-MM" 格式，只返回该月及之前的文件
     """
     source = Path(source_dir)
     files = []
@@ -93,11 +94,13 @@ def scan_files(source_dir: str, since_month: str = None) -> tuple:
             if is_junk_file(f):
                 skipped += 1
                 continue
-            if since_month:
-                month = get_file_month(f)
-                if month != "未知日期" and month < since_month:
-                    skipped += 1
-                    continue
+            month = get_file_month(f)
+            if since_month and month != "未知日期" and month < since_month:
+                skipped += 1
+                continue
+            if until_month and month != "未知日期" and month > until_month:
+                skipped += 1
+                continue
             files.append(f)
         except (OSError, PermissionError):
             skipped += 1
@@ -219,6 +222,8 @@ def main():
                         help="分类模式")
     parser.add_argument("--since", default=None,
                         help="只处理该月份及之后的文件，格式 YYYY-MM，如 2026-01")
+    parser.add_argument("--until", default=None,
+                        help="只处理该月份及之前的文件，格式 YYYY-MM，如 2026-03")
     parser.add_argument("--dry-run", action="store_true",
                         help="仅预览，不执行任何操作")
     args = parser.parse_args()
@@ -228,7 +233,7 @@ def main():
         sys.exit(1)
 
     print(f"🔍 正在扫描：{args.source} ...")
-    files, skipped = scan_files(args.source, args.since)
+    files, skipped = scan_files(args.source, args.since, args.until)
     print(f"   发现 {len(files):,} 个有效文件（跳过 {skipped:,} 个临时/范围外文件）")
 
     print("📋 正在生成整理计划...")

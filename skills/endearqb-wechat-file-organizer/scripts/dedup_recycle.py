@@ -63,6 +63,44 @@ def get_size(f: Path) -> int:
 
 # ── 核心去重逻辑 ──────────────────────────────────────────────────
 
+def find_duplicates_by_size(source_dir: str) -> list:
+    """
+    基于文件大小查找重复（用于哈希命名的视频文件）
+    返回重复文件组列表
+    """
+    source = Path(source_dir)
+    size_map = defaultdict(list)
+
+    # 按大小分组
+    for f in source.rglob("*"):
+        if not f.is_file():
+            continue
+        size = get_size(f)
+        if size <= 0:
+            continue
+        size_map[size].append((f, get_mtime(f)))
+
+    # 筛选出有重复（大小相同）的组
+    result = []
+    for size, files in size_map.items():
+        if len(files) < 2:
+            continue
+
+        # 按修改时间降序，保留最新的
+        files.sort(key=lambda x: x[1], reverse=True)
+        keep_file = files[0][0]
+        remove_files = [f[0] for f in files[1:]]
+
+        result.append({
+            "keep": keep_file,
+            "remove": remove_files,
+            "reason": "大小相同重复",
+            "size_each": size,
+        })
+
+    return result
+
+
 def find_duplicate_groups(source_dir: str) -> list:
     """
     扫描目录，返回重复文件组列表
@@ -195,6 +233,7 @@ def print_dry_run_report(source_dir: str, groups: list):
     total_size_saved = sum(g["size_each"] * len(g["remove"]) for g in groups)
     bracket_groups = [g for g in groups if g["reason"] == "括号序号重复"]
     exact_groups   = [g for g in groups if g["reason"] == "完全相同重复"]
+    size_groups    = [g for g in groups if g["reason"] == "大小相同重复"]
 
     print("\n" + "=" * 58)
     print("🗑  微信重复文件检测报告（Dry Run 预览）")
@@ -203,8 +242,11 @@ def print_dry_run_report(source_dir: str, groups: list):
     print()
     print(f"📊 统计：")
     print(f"  发现重复组：   {len(groups):,} 组")
-    print(f"    括号序号重复：{len(bracket_groups):,} 组（如 文件(2).pdf）")
-    print(f"    完全相同重复：{len(exact_groups):,} 组")
+    if bracket_groups or exact_groups:
+        print(f"    括号序号重复：{len(bracket_groups):,} 组（如 文件(2).pdf）")
+        print(f"    完全相同重复：{len(exact_groups):,} 组")
+    if size_groups:
+        print(f"    大小相同重复：{len(size_groups):,} 组（哈希命名文件）")
     print(f"  将移入回收站：{total_remove:,} 个文件（节省 {format_size(total_size_saved)}）")
     print()
 
@@ -230,14 +272,19 @@ def main():
     parser = argparse.ArgumentParser(description="微信重复文件检测 & 回收站清理")
     parser.add_argument("--source", required=True, help="微信文件源目录")
     parser.add_argument("--dry-run", action="store_true", help="仅预览，不执行任何操作")
+    parser.add_argument("--by-size", action="store_true", help="基于文件大小去重（用于哈希命名文件，如视频）")
     args = parser.parse_args()
 
     if not Path(args.source).exists():
         print(f"❌ 源目录不存在：{args.source}")
         sys.exit(1)
 
-    print(f"🔍 正在扫描重复文件：{args.source} ...")
-    groups = find_duplicate_groups(args.source)
+    if args.by_size:
+        print(f"🔍 正在基于【文件大小】扫描重复：{args.source} ...")
+        groups = find_duplicates_by_size(args.source)
+    else:
+        print(f"🔍 正在扫描重复文件：{args.source} ...")
+        groups = find_duplicate_groups(args.source)
 
     if not groups:
         print("✅ 未发现重复文件，目录很整洁！")

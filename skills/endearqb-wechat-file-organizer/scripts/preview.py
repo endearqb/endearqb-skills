@@ -24,7 +24,7 @@ from dedup_recycle import find_duplicate_groups, format_size as fmt_size
 from scan_and_organize import scan_files, build_copy_plan, get_file_type, get_file_month
 
 
-def print_full_preview(source_dir, dest_dir, mode, since_month):
+def print_full_preview(source_dir, dest_dir, mode, since_month, until_month=None):
     source = Path(source_dir)
 
     print("\n" + "=" * 62)
@@ -32,7 +32,14 @@ def print_full_preview(source_dir, dest_dir, mode, since_month):
     print("=" * 62)
     print(f"源目录：{source_dir}")
     print(f"目标目录：{dest_dir}")
-    since_label = f"{since_month} 至今" if since_month else "全部"
+    if since_month and until_month:
+        since_label = f"{since_month} 至 {until_month}"
+    elif since_month:
+        since_label = f"{since_month} 至今"
+    elif until_month:
+        since_label = f"截止 {until_month}"
+    else:
+        since_label = "全部"
     print(f"分类模式：{mode}    时间范围：{since_label}")
 
     # ── Part 1：重复文件分析 ───────────────────────────────────────
@@ -91,7 +98,7 @@ def print_full_preview(source_dir, dest_dir, mode, since_month):
     print("📂 Part 2 · 整理后目录结构（将复制到目标目录）")
     print("─" * 62)
 
-    files, skipped = scan_files(source_dir, since_month)
+    files, skipped = scan_files(source_dir, since_month, until_month)
 
     if not files:
         print("  ⚠️  没有符合条件的文件可整理")
@@ -147,7 +154,8 @@ def print_full_preview(source_dir, dest_dir, mode, since_month):
     if files:
         steps.append(f"步骤 B · 整理文件到目标目录 → 复制 {len(files):,} 个文件")
         since_arg = f' --since {since_month}' if since_month else ''
-        steps.append(f"         命令：python scan_and_organize.py --source \"{source_dir}\" --dest \"{dest_dir}\" --mode {mode}{since_arg}")
+        until_arg = f' --until {until_month}' if until_month else ''
+        steps.append(f"         命令：python scan_and_organize.py --source \"{source_dir}\" --dest \"{dest_dir}\" --mode {mode}{since_arg}{until_arg}")
 
     if steps:
         for s in steps:
@@ -167,6 +175,7 @@ def main():
     parser.add_argument("--mode", default="month_type",
                         choices=["month_type", "type_only", "month_only"])
     parser.add_argument("--since", default=None, help="只预览该月份及之后，格式 YYYY-MM")
+    parser.add_argument("--until", default=None, help="只预览该月份及之前，格式 YYYY-MM")
     args = parser.parse_args()
 
     if not Path(args.source).exists():
@@ -176,7 +185,7 @@ def main():
     print(f"🔍 正在分析：{args.source} ...")
     print(f"   （首次分析较慢，文件较多时请耐心等待）")
 
-    print_full_preview(args.source, args.dest, args.mode, args.since)
+    print_full_preview(args.source, args.dest, args.mode, args.since, args.until)
 
 
 if __name__ == "__main__":
