@@ -11,6 +11,7 @@
 - `endearqb-lab-report-writer`：用于实验/报告类内容撰写与校验的技能，附带参考资料与校验脚本。
 - `endearqb-frontend-dataviz`：用于前端数据可视化工作的技能，包含图表示例、配色方案、图标等参考资料。
 - `endearqb-community-profiler`：用于群聊记录分析的技能，可生成成员画像、识别核心贡献者、评估社区健康度、总结聊天内容。
+- `endearqb-svg-flowchart`：用于根据文字步骤生成高质量 SVG 流程图的技能，支持垂直/水平布局、判断分支、多列分组流程图，以及可选的 HTML 预览页输出。
 - `endearqb-wechat-file-organizer`：用于整理 Windows 微信文件存储目录的技能，支持自动检测目录、重复文件分析、移入回收站去重，以及按月份和类型分类整理。
 
 ## 目录结构
@@ -20,6 +21,7 @@ skills/
   endearqb-lab-report-writer/
   endearqb-frontend-dataviz/
   endearqb-community-profiler/
+  endearqb-svg-flowchart/
   endearqb-wechat-file-organizer/
 ```
 
