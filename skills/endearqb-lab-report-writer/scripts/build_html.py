@@ -121,14 +121,27 @@ body {
   font-family: "Source Serif 4", Georgia, "Noto Serif SC", serif;
   line-height: 1.80;
 }
+/* 表格 */
 th { background: #21262d; color: #e6edf3; }
+td { border-bottom-color: #30363d; }
 tbody tr:nth-child(even) td { background: #1c2128; }
+/* 摘要、目录、引用块 */
 .abstract { background: #1a2332; border-left-color: var(--accent); }
+.toc { background: var(--soft); border-color: var(--line); }
+blockquote { background: #1a2332; border-left-color: var(--accent); color: var(--muted); }
+/* 公式、验证框 */
 .formula { background: var(--soft-blue); border-color: #2d3748; }
 .verification { background: #162118; border-color: #2d5a27; border-left-color: #3fb950; }
+/* 提示框、图表容器 */
 .callout { background: linear-gradient(180deg,#1a2a1a 0%,#162820 100%); border-left-color: #3f6b3a; }
-.toc { background: var(--soft); border-color: var(--line); }
 .chart-container { background: #1c2128; border-color: var(--line); }
+/* 元数据卡片 */
+.meta-card { background: linear-gradient(180deg,#1c2128 0%,#161b22 100%); border-color: var(--line); }
+/* 验证面板 */
+.verify-panel-header { background: var(--soft); }
+.verify-panel-header:hover { background: var(--soft-alt); }
+.verify-section-label { background: var(--soft); }
+/* 链接 */
 a { color: var(--accent); }""",
 
     'clean': """\
@@ -151,8 +164,27 @@ body {
   line-height: 1.78;
 }
 .page { border: none; border-top: 3px solid var(--accent); }
+/* 表格 */
+th { background: #1a6eb5; color: #ffffff; }
+td { border-bottom-color: #dee2e6; }
+tbody tr:nth-child(even) td { background: #f8f9fa; }
+/* 摘要、目录、引用块 */
+.abstract { background: #f0f7ff; border-left-color: #1a6eb5; }
+.toc { background: #f8f9fa; border-color: var(--line); }
+blockquote { background: #ebf5fb; border-left-color: #1a6eb5; color: var(--muted); }
+/* 公式、验证框 */
+.formula { background: #ebf5fb; border-color: #b8d8f0; }
+.verification { background: #f0fff4; border-color: #c3e6cb; border-left-color: #28a745; }
+/* 提示框、图表、元数据卡片 */
 .callout { background: linear-gradient(180deg,#e8f4fd 0%,#f0f7ff 100%); border-left-color: #1a6eb5; }
-.abstract { background: #f0f7ff; border-left-color: var(--ink); }""",
+.chart-container { background: #f8f9fa; border-color: var(--line); }
+.meta-card { background: linear-gradient(180deg,#f1f3f5 0%,#e9ecef 100%); border-color: var(--line); }
+/* 验证面板 */
+.verify-panel-header { background: var(--soft); }
+.verify-panel-header:hover { background: var(--soft-alt); }
+.verify-section-label { background: var(--soft); }
+/* 链接 */
+a { color: #1a6eb5; }""",
 
     'olive': """\
 /* ===== 主题：橄榄学报 Olive Scholar ===== */
@@ -175,9 +207,27 @@ body {
   font-family: Georgia, "Noto Serif SC", serif;
   line-height: 1.84;
 }
-.callout { background: linear-gradient(180deg,#edf0e5 0%,#f4f6ef 100%); border-left-color: #4a6741; }
+/* 表格 */
+th { background: #3d5735; color: #f5f3ec; }
+td { border-bottom-color: #ddd8c4; }
 tbody tr:nth-child(even) td { background: #f3f1e8; }
-td { border-bottom-color: #ddd8c4; }""",
+/* 摘要、目录、引用块 */
+.abstract { background: #edf0e5; border-left-color: #4a6741; }
+.toc { background: #f4f2ea; border-color: var(--line); }
+blockquote { background: #edf0e5; border-left-color: #4a6741; color: var(--muted); }
+/* 公式、验证框 */
+.formula { background: #edf2e8; border-color: #c4cebc; }
+.verification { background: #f0f5ee; border-color: #b8ccb4; border-left-color: #4a6741; }
+/* 提示框、图表、元数据卡片 */
+.callout { background: linear-gradient(180deg,#edf0e5 0%,#f4f6ef 100%); border-left-color: #4a6741; }
+.chart-container { background: #f7f5ef; border-color: var(--line); }
+.meta-card { background: linear-gradient(180deg,#eeead8 0%,#e8e4d0 100%); border-color: var(--line); }
+/* 验证面板 */
+.verify-panel-header { background: var(--soft); }
+.verify-panel-header:hover { background: var(--soft-alt); }
+.verify-section-label { background: var(--soft); }
+/* 链接 */
+a { color: #4a6741; }""",
 
     'engineering': """\
 /* ===== 主题：砖红工程 Engineering Red ===== */
@@ -200,8 +250,27 @@ body {
   font-family: Georgia, "Noto Serif SC", serif;
   line-height: 1.80;
 }
+/* 表格 */
+th { background: #7a1a28; color: #fff8f8; }
+td { border-bottom-color: #d1cbc3; }
+tbody tr:nth-child(even) td { background: #faf8f6; }
+/* 摘要、目录、引用块 */
+.abstract { background: #fdf1ee; border-left-color: #9b2335; }
+.toc { background: #faf7f5; border-color: var(--line); }
+blockquote { background: #fdf1ee; border-left-color: #9b2335; color: var(--muted); }
+/* 公式、验证框 */
+.formula { background: #f5f5f7; border-color: #d1cbc3; }
+.verification { background: #f0fff4; border-color: #c3e6cb; border-left-color: #28a745; }
+/* 提示框、图表、元数据卡片 */
 .callout { background: linear-gradient(180deg,#fdf1ee 0%,#fdf8f7 100%); border-left-color: #9b2335; }
-tbody tr:nth-child(even) td { background: #faf8f6; }""",
+.chart-container { background: #faf8f6; border-color: var(--line); }
+.meta-card { background: linear-gradient(180deg,#f4eeea 0%,#eee8e4 100%); border-color: var(--line); }
+/* 验证面板 */
+.verify-panel-header { background: var(--soft); }
+.verify-panel-header:hover { background: var(--soft-alt); }
+.verify-section-label { background: var(--soft); }
+/* 链接 */
+a { color: #9b2335; }""",
 
     'graphite': """\
 /* ===== 主题：石墨极简 Graphite Minimal ===== */
@@ -223,8 +292,27 @@ body {
   line-height: 1.80;
 }
 .page { border: 1px solid var(--line); }
-.abstract { background: #f5f5f5; border-left-color: var(--ink); }
-.callout { background: #f0f0f0; border-left-color: #666; }""",
+/* 表格 */
+th { background: #2a2a2a; color: #f5f5f5; }
+td { border-bottom-color: #cccccc; }
+tbody tr:nth-child(even) td { background: #f5f5f5; }
+/* 摘要、目录、引用块 */
+.abstract { background: #f0f0f0; border-left-color: #1a1a1a; }
+.toc { background: #f5f5f5; border-color: #cccccc; }
+blockquote { background: #f0f0f0; border-left-color: #666; color: var(--muted); }
+/* 公式、验证框 */
+.formula { background: #f0f0f4; border-color: #cccccc; }
+.verification { background: #f8f8f8; border-color: #cccccc; border-left-color: #555555; }
+/* 提示框、图表、元数据卡片 */
+.callout { background: #f0f0f0; border-left-color: #666; }
+.chart-container { background: #f8f8f8; border-color: #cccccc; }
+.meta-card { background: linear-gradient(180deg,#ebebeb 0%,#e5e5e5 100%); border-color: #cccccc; }
+/* 验证面板 */
+.verify-panel-header { background: var(--soft); }
+.verify-panel-header:hover { background: var(--soft-alt); }
+.verify-section-label { background: var(--soft); }
+/* 链接 */
+a { color: #333333; text-decoration: underline; }""",
 }
 
 THEME_ALIASES = {
