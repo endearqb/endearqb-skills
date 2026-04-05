@@ -1,7 +1,7 @@
 ---
 name: lab-report-writer
 metadata:
-  version: 2.1.0
+  version: 2.2.1
 description: |
   撰写期刊风格的实验报告，支持理工科实验课报告、科研论文级实验记录、工程项目技术报告、竞赛展示用报告等全场景。
   用户提供实验信息、数据、方法描述后，生成结构完整、排版专业的报告，并附带Python数据验证脚本对所有计算结论进行复核。
@@ -17,6 +17,7 @@ description: |
   输出格式：优先HTML报告（期刊风格）；也可输出Markdown或Word（.docx）。
   如果用户提供了Markdown/Word报告，应提醒其可升级为HTML报告。
 ---
+
 # Lab Report Writer — 期刊风格实验报告撰写 Skill
 
 ## 概览
@@ -25,58 +26,47 @@ description: |
 
 核心流程：**信息采集 → 文献搜索 → Python自动验证 → 撰写结构化内容 → 生成HTML报告**
 
-* * *
+---
 
 ## 第一步：信息采集与场景识别
 
 ### 识别场景类型
 
-<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>场景</p></th><th colspan="1" rowspan="1"><p>典型特征</p></th><th colspan="1" rowspan="1"><p>报告侧重</p></th></tr><tr><td colspan="1" rowspan="1"><p>实验课报告</p></td><td colspan="1" rowspan="1"><p>有实验目的、操作步骤、数据表格</p></td><td colspan="1" rowspan="1"><p>规范结构、误差分析、结论</p></td></tr><tr><td colspan="1" rowspan="1"><p>科研记录</p></td><td colspan="1" rowspan="1"><p>有假设、方法对比、统计分析</p></td><td colspan="1" rowspan="1"><p>方法严谨性、数据可重复性</p></td></tr><tr><td colspan="1" rowspan="1"><p>工程技术报告</p></td><td colspan="1" rowspan="1"><p>有设计参数、测试标准、性能指标</p></td><td colspan="1" rowspan="1"><p>工程可行性、指标达标情况</p></td></tr><tr><td colspan="1" rowspan="1"><p>竞赛展示</p></td><td colspan="1" rowspan="1"><p>有创新点、视觉冲击需求</p></td><td colspan="1" rowspan="1"><p>清晰叙事、高质量图表</p></td></tr></tbody></table>
+| 场景 | 典型特征 | 报告侧重 |
+|------|----------|----------|
+| 实验课报告 | 有实验目的、操作步骤、数据表格 | 规范结构、误差分析、结论 |
+| 科研记录 | 有假设、方法对比、统计分析 | 方法严谨性、数据可重复性 |
+| 工程技术报告 | 有设计参数、测试标准、性能指标 | 工程可行性、指标达标情况 |
+| 竞赛展示 | 有创新点、视觉冲击需求 | 清晰叙事、高质量图表 |
 
 ### 必须从用户处收集的信息
 
 **最小信息集（必须有）：**
-
--   实验/项目标题
-    
--   实验目的或研究问题
-    
--   实验方法或操作步骤（文字描述即可）
-    
--   主要结果（数据或文字描述）
-    
+- 实验/项目标题
+- 实验目的或研究问题
+- 实验方法或操作步骤（文字描述即可）
+- 主要结果（数据或文字描述）
 
 **增强信息（有则收集）：**
-
--   原始数据表格（CSV、手工记录等）
-    
--   计算公式和推导过程
-    
--   参考文献列表
-    
--   实验装置或流程图描述
-    
--   误差来源分析
-    
--   作者、机构、日期等元数据
-    
+- 原始数据表格（CSV、手工记录等）
+- 计算公式和推导过程
+- 参考文献列表
+- 实验装置或流程图描述
+- 误差来源分析
+- 作者、机构、日期等元数据
 
 ### 信息不完整时的处理策略
 
--   **数据缺失**：跳过图表，用文字表述结果，在报告中标注"\[图表：数据待补充\]"
-    
--   **公式缺失**：根据领域知识推断，并在报告中说明假设
-    
--   **参考文献缺失**：生成报告，提醒用户补充
-    
--   **元数据缺失**：使用占位符（如"\[作者姓名\]"、"\[日期\]"）
-    
+- **数据缺失**：跳过图表，用文字表述结果，在报告中标注"[图表：数据待补充]"
+- **公式缺失**：根据领域知识推断，并在报告中说明假设
+- **参考文献缺失**：生成报告，提醒用户补充
+- **元数据缺失**：使用占位符（如"[作者姓名]"、"[日期]"）
 
-* * *
+---
 
 ## 第一步（补）：生成前确认选项
 
-完成信息采集、场景识别后，在开始任何生成之前，**必须调用** `ask_user_input` **工具**向用户确认以下四个选项。用自然语言简短说明即将生成报告，然后紧接着调用工具展示选项（不要用纯文字罗列问题）。
+完成信息采集、场景识别后，在开始任何生成之前，**必须调用 `ask_user_input` 工具**向用户确认以下四个选项。用自然语言简短说明即将生成报告，然后紧接着调用工具展示选项（不要用纯文字罗列问题）。
 
 ```
 调用 ask_user_input，四个问题同时呈现：
@@ -104,55 +94,65 @@ description: |
 
 根据用户回答设定以下工作变量，后续所有步骤依据这些变量执行：
 
-<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>变量</p></th><th colspan="1" rowspan="1"><p>含义</p></th><th colspan="1" rowspan="1"><p>默认值</p></th></tr><tr><td colspan="1" rowspan="1"><p><code>MODE_LONG</code></p></td><td colspan="1" rowspan="1"><p>是否使用长文档分段模式</p></td><td colspan="1" rowspan="1"><p><code>true</code></p></td></tr><tr><td colspan="1" rowspan="1"><p><code>NEED_SVG</code></p></td><td colspan="1" rowspan="1"><p>是否生成 SVG 流程图</p></td><td colspan="1" rowspan="1"><p><code>true</code></p></td></tr><tr><td colspan="1" rowspan="1"><p><code>NEED_CHART</code></p></td><td colspan="1" rowspan="1"><p>是否生成 Chart.js 图表</p></td><td colspan="1" rowspan="1"><p><code>true</code></p></td></tr><tr><td colspan="1" rowspan="1"><p><code>NEED_MD</code></p></td><td colspan="1" rowspan="1"><p>是否额外输出 Markdown 草稿</p></td><td colspan="1" rowspan="1"><p><code>false</code></p></td></tr><tr><td colspan="1" rowspan="1"><p><code>THEME</code></p></td><td colspan="1" rowspan="1"><p>色彩主题名称</p></td><td colspan="1" rowspan="1"><p><code>"暖墨纸"</code></p></td></tr></tbody></table>
+| 变量 | 含义 | 默认值 |
+|------|------|--------|
+| `MODE_LONG` | 是否使用长文档分段模式 | `true` |
+| `NEED_SVG` | 是否生成 SVG 流程图 | `true` |
+| `NEED_CHART` | 是否生成 Chart.js 图表 | `true` |
+| `NEED_MD` | 是否额外输出 Markdown 草稿 | `false` |
+| `THEME` | 色彩主题名称 | `"暖墨纸"` |
 
 **变量对后续步骤的影响：**
-
--   `MODE_LONG=false` → 阶段一用单文件 `report-body.html`，`build_html.py` 用 `--body`
-    
--   `NEED_SVG=false` → 跳过 SVG 生成，方法节中不写 `data-svg-src` 占位符
-    
--   `NEED_CHART=false` → 跳过 `charts-init.js`，结果节中不写 `<canvas>` 占位
-    
--   `NEED_MD=true` → 阶段三额外输出一份 `.md` 文件并一同 `present_files`
-    
--   `THEME` → 非默认时，在 `build_html.py` 命令中添加 `--theme <值>` 参数（Claude 无需读取或写入任何 CSS）
-    
+- `MODE_LONG=false` → 阶段一用单文件 `report-body.html`，`build_html.py` 用 `--body`
+- `NEED_SVG=false` → 跳过 SVG 生成，方法节中不写 `data-svg-src` 占位符
+- `NEED_CHART=false` → 跳过 `charts-init.js`，结果节中不写 `<canvas>` 占位
+- `NEED_MD=true` → 阶段三额外输出一份 `.md` 文件并一同 `present_files`
+- `THEME` → 非默认时，在 `build_html.py` 命令中添加 `--theme <值>` 参数（Agent 无需读取或写入任何 CSS）
 
 ### 主题名称映射
 
-<table style="min-width: 50px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>用户选项</p></th><th colspan="1" rowspan="1"><p><code>--theme</code> 参数值</p></th></tr><tr><td colspan="1" rowspan="1"><p>暖墨纸（默认）</p></td><td colspan="1" rowspan="1"><p><code>default</code>（或省略）</p></td></tr><tr><td colspan="1" rowspan="1"><p>午夜藏青（深色）</p></td><td colspan="1" rowspan="1"><p><code>dark</code></p></td></tr><tr><td colspan="1" rowspan="1"><p>净白简约</p></td><td colspan="1" rowspan="1"><p><code>clean</code></p></td></tr><tr><td colspan="1" rowspan="1"><p>橄榄学报</p></td><td colspan="1" rowspan="1"><p><code>olive</code></p></td></tr><tr><td colspan="1" rowspan="1"><p>砖红工程</p></td><td colspan="1" rowspan="1"><p><code>engineering</code></p></td></tr><tr><td colspan="1" rowspan="1"><p>石墨极简</p></td><td colspan="1" rowspan="1"><p><code>graphite</code></p></td></tr></tbody></table>
+| 用户选项 | `--theme` 参数值 |
+|---------|----------------|
+| 暖墨纸（默认） | `default`（或省略） |
+| 午夜藏青（深色） | `dark` |
+| 净白简约 | `clean` |
+| 橄榄学报 | `olive` |
+| 砖红工程 | `engineering` |
+| 石墨极简 | `graphite` |
 
 ### 主题注入规则
 
-主题 CSS 完全由 `build_html.py` 处理，Claude **不需要**读取 `style-constitution.md`，也不需要内联任何 CSS。
+主题 CSS 完全由 `build_html.py` 处理，Agent **不需要**读取 `style-constitution.md`，也不需要内联任何 CSS。
 
--   `THEME=default`：`build_html.py` 调用时省略 `--theme` 参数（或传 `--theme default`）。
-    
--   `THEME≠default`：在 `build_html.py` 调用命令中添加 `--theme <值>` 参数即可。
-    
+- **`THEME=default`**：`build_html.py` 调用时省略 `--theme` 参数（或传 `--theme default`）。
+- **`THEME≠default`**：在 `build_html.py` 调用命令中添加 `--theme <值>` 参数即可。
 
 ```bash
 # 示例：橄榄学报主题
 python scripts/build_html.py \
-  --body-dir body-parts/ \
-  --output /mnt/user-data/outputs/report.html \
+  --body-dir /outputs/XXXX报告名/body-parts/ \
+  --output /outputs/XXXX报告名/report.html \
   --theme olive \
   [--charts charts-init.js] \
   [--verify verify-output.txt]
 ```
 
-脚本会自动将对应主题的 CSS 块注入 `<head>` 中的独立 `<style>` 标签，优先级高于 `report.css`，无需 Claude 参与任何 CSS 处理。
+脚本会自动将对应主题的 CSS 块注入 `<head>` 中的独立 `<style>` 标签，优先级高于 `report.css`，无需 Agent 参与任何 CSS 处理。
 
 > 如果用户在信息采集阶段就已明确指定了主题（在 `ask_user_input` 之前），则 `ask_user_input` 中第四个问题的默认高亮选项改为对应主题。
 
-* * *
+---
 
 ## 第二步：Python数据自动验证
 
 ### 触发判断
 
-<table style="min-width: 50px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>情形</p></th><th colspan="1" rowspan="1"><p>操作</p></th></tr><tr><td colspan="1" rowspan="1"><p>用户上传CSV文件</p></td><td colspan="1" rowspan="1"><p>调用 <code>scripts/auto_verify.py</code> 自动解析并验证</p></td></tr><tr><td colspan="1" rowspan="1"><p>用户粘贴表格数据（Markdown表格/空格分隔/逗号分隔）</p></td><td colspan="1" rowspan="1"><p>写入临时CSV，同上处理</p></td></tr><tr><td colspan="1" rowspan="1"><p>用户提供了具体数值和公式</p></td><td colspan="1" rowspan="1"><p>生成专项验证脚本并运行</p></td></tr><tr><td colspan="1" rowspan="1"><p>用户只有文字描述、无任何数值</p></td><td colspan="1" rowspan="1"><p>跳过Python验证，在报告中注明</p></td></tr></tbody></table>
+| 情形 | 操作 |
+|------|------|
+| 用户上传CSV文件 | 调用 `scripts/auto_verify.py` 自动解析并验证 |
+| 用户粘贴表格数据（Markdown表格/空格分隔/逗号分隔） | 写入临时CSV，同上处理 |
+| 用户提供了具体数值和公式 | 生成专项验证脚本并运行 |
+| 用户只有文字描述、无任何数值 | 跳过Python验证，在报告中注明 |
 
 ### 自动验证流程（CSV/表格数据）
 
@@ -180,18 +180,23 @@ Step 5  输出验证摘要
 
 脚本自动识别以下模式（不区分中英文大小写）：
 
-<table style="min-width: 50px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>关键词组合</p></th><th colspan="1" rowspan="1"><p>自动触发的验证</p></th></tr><tr><td colspan="1" rowspan="1"><p><code>质量/mass</code> + <code>产率/yield</code></p></td><td colspan="1" rowspan="1"><p>产率 = m产品 / m理论 × 100%</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>时间/time</code> + <code>浓度/concentration</code></p></td><td colspan="1" rowspan="1"><p>速率 = ΔC/Δt；一阶/零阶拟合</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>电压/voltage</code> + <code>电流/current</code></p></td><td colspan="1" rowspan="1"><p>功率 P = UI；电阻 R = U/I</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>力/force</code> + <code>位移/displacement</code></p></td><td colspan="1" rowspan="1"><p>功 W = F·d；弹性系数</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>温度/temperature</code> + <code>速率/rate</code></p></td><td colspan="1" rowspan="1"><p>Arrhenius拟合（lnk vs 1/T）</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>重复/repeat</code> 多列</p></td><td colspan="1" rowspan="1"><p>均值±标准差；RSD；置信区间</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>理论/theoretical</code> + <code>实验/experimental</code></p></td><td colspan="1" rowspan="1"><p>相对误差 = |实-理|/理 × 100%</p></td></tr></tbody></table>
+| 关键词组合 | 自动触发的验证 |
+|-----------|--------------|
+| `质量/mass` + `产率/yield` | 产率 = m产品 / m理论 × 100% |
+| `时间/time` + `浓度/concentration` | 速率 = ΔC/Δt；一阶/零阶拟合 |
+| `电压/voltage` + `电流/current` | 功率 P = UI；电阻 R = U/I |
+| `力/force` + `位移/displacement` | 功 W = F·d；弹性系数 |
+| `温度/temperature` + `速率/rate` | Arrhenius拟合（lnk vs 1/T） |
+| `重复/repeat` 多列 | 均值±标准差；RSD；置信区间 |
+| `理论/theoretical` + `实验/experimental` | 相对误差 = \|实-理\|/理 × 100% |
 
 若无法匹配，脚本仅输出统计摘要，不强行推断计算关系。
 
 ### 验证深度自动判断
 
--   数据点 < 10：轻量（仅统计摘要 + 结果对比）
-    
--   数据点 10–50：中度（统计摘要 + 中间步骤 + 偏差标注）
-    
--   数据点 > 50：深度（中度 + 相关性分析 + 输出图表数据供Chart.js使用）
-    
+- 数据点 < 10：轻量（仅统计摘要 + 结果对比）
+- 数据点 10–50：中度（统计摘要 + 中间步骤 + 偏差标注）
+- 数据点 > 50：深度（中度 + 相关性分析 + 输出图表数据供Chart.js使用）
 
 ### 验证脚本
 
@@ -204,28 +209,20 @@ Step 5  输出验证摘要
 将脚本输出嵌入右下角**悬浮折叠面板**（`#verifyPanel`），**正文不设数据验证章节**。
 
 面板内容分三区渲染（详见 `references/html-template.md` 验证面板段落）：
-
-1.  **统计摘要区**：各列均值、标准差、RSD、最大/最小值
-    
-2.  **计算验证区**：每个匹配模式的公式、计算值、用户声明值、偏差百分比、✓/✗
-    
-3.  **偏差汇总区**：仅在有 ✗ 项时显示，列出所有偏差项及建议
-    
+1. **统计摘要区**：各列均值、标准差、RSD、最大/最小值
+2. **计算验证区**：每个匹配模式的公式、计算值、用户声明值、偏差百分比、✓/✗
+3. **偏差汇总区**：仅在有 ✗ 项时显示，列出所有偏差项及建议
 
 面板行为：
-
--   有偏差（含 ✗）时：面板边框变橙，**自动展开**，并在面板底部显示偏差汇总
-    
--   全部通过（仅 ✓）时：面板默认折叠，徽章显示「N/N 通过」
-    
--   键盘快捷键：`V` 键切换展开/折叠
-    
+- 有偏差（含 ✗）时：面板边框变橙，**自动展开**，并在面板底部显示偏差汇总
+- 全部通过（仅 ✓）时：面板默认折叠，徽章显示「N/N 通过」
+- 键盘快捷键：`V` 键切换展开/折叠
 
 #### Markdown 报告
 
 在参考文献之后追加 `## 附录：数据验证` 章节，原样嵌入脚本输出的纯文本块。
 
-* * *
+---
 
 ### ⚠ 数据冲突处理原则（宪法级规定，不可违反）
 
@@ -249,22 +246,23 @@ Step 5  输出验证摘要
 
 **偏差严重程度分级**：
 
-<table style="min-width: 50px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>偏差幅度</p></th><th colspan="1" rowspan="1"><p>处理方式</p></th></tr><tr><td colspan="1" rowspan="1"><p>&lt; 1%</p></td><td colspan="1" rowspan="1"><p>视为数值舍入误差，验证面板标 ✓，正文无需特殊处理</p></td></tr><tr><td colspan="1" rowspan="1"><p>1–5%</p></td><td colspan="1" rowspan="1"><p>验证面板标 ✗，讨论节加一句可能原因</p></td></tr><tr><td colspan="1" rowspan="1"><p>5–20%</p></td><td colspan="1" rowspan="1"><p>验证面板标 ✗ 并橙色警示，讨论节专门分析，建议核查</p></td></tr><tr><td colspan="1" rowspan="1"><p>&gt; 20%</p></td><td colspan="1" rowspan="1"><p>验证面板标 ✗ 并橙色警示，在正式生成报告<strong>前</strong>主动告知用户偏差情况，询问是否继续</p></td></tr></tbody></table>
+| 偏差幅度 | 处理方式 |
+|---------|---------|
+| < 1% | 视为数值舍入误差，验证面板标 ✓，正文无需特殊处理 |
+| 1–5% | 验证面板标 ✗，讨论节加一句可能原因 |
+| 5–20% | 验证面板标 ✗ 并橙色警示，讨论节专门分析，建议核查 |
+| > 20% | 验证面板标 ✗ 并橙色警示，在正式生成报告**前**主动告知用户偏差情况，询问是否继续 |
 
-* * *
+---
 
 ## 第三步：文献搜索与引文标注
 
 ### 搜索触发原则
 
 在撰写以下章节时，**必须**进行网络文献搜索：
-
--   引言（背景知识、研究现状）
-    
--   实验原理（理论依据、公式来源）
-    
--   讨论（与已有研究对比、机理解释）
-    
+- 引言（背景知识、研究现状）
+- 实验原理（理论依据、公式来源）
+- 讨论（与已有研究对比、机理解释）
 
 **搜索策略：**
 
@@ -293,7 +291,6 @@ Step 5  输出验证摘要
 ### GB/T 7714-2015 引文格式
 
 **正文内引用标注：**
-
 ```html
 <!-- 上标数字引用，可点击跳转 -->
 <sup><a href="#ref-1">[1]</a></sup>
@@ -319,7 +316,6 @@ Step 5  输出验证摘要
 ```
 
 **HTML中的参考文献节渲染：**
-
 ```html
 <section id="references" class="references">
   <h2>参考文献</h2>
@@ -339,14 +335,13 @@ Step 5  输出验证摘要
 ### 引文质量检查
 
 生成报告前检查：
-
 - [ ] 每处引用均能通过URL访问（或有明确DOI）
 - [ ] 作者、刊名、年份、卷期页码字段完整
-- [ ] 文献类型标识符正确（\[J\]期刊/\[M\]专著/\[S\]标准/\[EB/OL\]网络）
+- [ ] 文献类型标识符正确（[J]期刊/[M]专著/[S]标准/[EB/OL]网络）
 - [ ] 正文引用编号与参考文献列表编号一一对应
 - [ ] 无虚构文献信息
 
-* * *
+---
 
 ## 第四步：报告结构
 
@@ -375,42 +370,27 @@ Step 5  输出验证摘要
 ```
 
 **场景裁剪原则：**
+- 实验课报告：保留全部章节，突出误差分析
+- 科研记录：在Methods中增加"统计方法"小节
+- 工程报告：将"实验原理"改为"设计依据"，增加"指标达标分析"
+- 竞赛展示：压缩Methods，突出Results和Discussion，图表优先
 
--   实验课报告：保留全部章节，突出误差分析
-    
--   科研记录：在Methods中增加"统计方法"小节
-    
--   工程报告：将"实验原理"改为"设计依据"，增加"指标达标分析"
-    
--   竞赛展示：压缩Methods，突出Results和Discussion，图表优先
-    
-
-* * *
+---
 
 ## 第五步：可视化规范
 
 ### 数据可视化原则（基于Storytelling with Data）
 
-1.  **选图优先级**：散点图（关系）> 折线图（趋势）> 柱状图（对比）> 饼图（占比，慎用）
-    
-2.  **去除图表垃圾**：无网格线（或极淡）、无边框、无不必要图例
-    
-3.  **数据墨水比最大化**：每个像素都应服务于数据
-    
-4.  **颜色使用**：
-    
-    -   主色系与HTML报告配色一致（`--accent: #2f4f4f`，暗绿色系）
-        
-    -   强调色用于最重要的数据系列
-        
-    -   其余系列用低饱和度灰色或浅色
-        
-    -   严禁彩虹配色
-        
-5.  **图表标题**：描述性标题（"处理组效率比对照组高23%"），而非轴标签式（"效率对比"）
-    
-6.  **标注优于图例**：直接在数据点旁标注系列名称
-    
+1. **选图优先级**：散点图（关系）> 折线图（趋势）> 柱状图（对比）> 饼图（占比，慎用）
+2. **去除图表垃圾**：无网格线（或极淡）、无边框、无不必要图例
+3. **数据墨水比最大化**：每个像素都应服务于数据
+4. **颜色使用**：
+   - 主色系与HTML报告配色一致（`--accent: #2f4f4f`，暗绿色系）
+   - 强调色用于最重要的数据系列
+   - 其余系列用低饱和度灰色或浅色
+   - 严禁彩虹配色
+5. **图表标题**：描述性标题（"处理组效率比对照组高23%"），而非轴标签式（"效率对比"）
+6. **标注优于图例**：直接在数据点旁标注系列名称
 
 ### Chart.js配置模板
 
@@ -434,25 +414,18 @@ const swdDefaults = {
 
 ### SVG流程图规范
 
--   仅当用户描述了实验步骤/流程时才绘制
-    
--   颜色用报告配色变量：`#f4f1e8`（暖白）、`#eef3f0`（淡绿）、`#2f4f4f`（墨绿）
-    
--   字体：Georgia（中文：Noto Serif SC）
-    
--   箭头颜色：`#2f4f4f`
-    
--   每个步骤方框：`rx="12"` 圆角，`stroke="#283239"` 边框
-    
--   详细模板参见 `references/svg-flowchart-template.md`
-    
+- 仅当用户描述了实验步骤/流程时才绘制
+- 颜色用报告配色变量：`#f4f1e8`（暖白）、`#eef3f0`（淡绿）、`#2f4f4f`（墨绿）
+- 字体：Georgia（中文：Noto Serif SC）
+- 箭头颜色：`#2f4f4f`
+- 每个步骤方框：`rx="12"` 圆角，`stroke="#283239"` 边框
+- 详细模板参见 `references/svg-flowchart-template.md`
 
 #### SVG 独立文件 + 注入机制
 
 SVG **不内嵌在正文 HTML 片段中**，而是单独保存为 `.svg` 文件，由 `build_html.py` 在拼装时自动注入。
 
-**① Claude 生成 SVG 文件**（如 `flowchart.svg`、`apparatus.svg`），保存在与正文同一目录：
-
+**① Agent 生成 SVG 文件**（如 `flowchart.svg`、`apparatus.svg`），保存在与正文同一目录：
 ```
 body-parts/
   body-04-methods.html     ← 只含占位符，不含 SVG 代码
@@ -460,8 +433,7 @@ body-parts/
   apparatus.svg            ← 若有多图，用不同文件名
 ```
 
-**② 正文 HTML 片段中用** `data-svg-src` **属性标记注入位置**：
-
+**② 正文 HTML 片段中用 `data-svg-src` 属性标记注入位置**：
 ```html
 <!-- body-04-methods.html -->
 <section id="methods">
@@ -480,18 +452,16 @@ body-parts/
 </section>
 ```
 
-**③** `build_html.py` **自动完成注入**，无需额外参数（默认在正文同目录查找）：
-
+**③ `build_html.py` 自动完成注入**，无需额外参数（默认在正文同目录查找）：
 ```bash
 # SVG 与 body-parts/ 在同一目录，自动找到
-python scripts/build_html.py --body-dir body-parts/ --output report.html
+python scripts/build_html.py --body-dir /outputs/XXXX报告名/body-parts/ --output /outputs/XXXX报告名/report.html
 
 # 若 SVG 在单独目录，用 --svg-dir 指定
-python scripts/build_html.py --body-dir body-parts/ --svg-dir svgs/ --output report.html
+python scripts/build_html.py --body-dir /outputs/XXXX报告名/body-parts/ --svg-dir /outputs/XXXX报告名/svgs/ --output /outputs/XXXX报告名/report.html
 ```
 
 注入后效果：
-
 ```html
 <figure>
   <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
@@ -503,7 +473,7 @@ python scripts/build_html.py --body-dir body-parts/ --svg-dir svgs/ --output rep
 
 > ⚠️ SVG 文件不要包含 `<?xml ...?>` 声明行（脚本会自动去除）。若文件未找到，占位符原样保留并打印 `[WARN]`，不中断构建。
 
-* * *
+---
 
 ## 第六步：HTML生成策略
 
@@ -519,10 +489,10 @@ lab-report-writer/
 ├── scripts/
 │   └── build_html.py     ← 拼接器：合并分段 + 注入 SVG + 注入验证数据
 └── references/
-    └── html-template.md  ← 给 Claude 读的结构参考（不参与构建）
+    └── html-template.md  ← 给 Agent 读的结构参考（不参与构建）
 
-工作目录（Claude 生成的临时文件）：
-body-parts/               ← 各章节 HTML 片段（或单文件 report-body.html）
+工作目录（Agent 生成的临时文件）：
+/outputs/XXXX报告名/body-parts/               ← 各章节 HTML 片段（或单文件 report-body.html）
   body-01-header.html
   body-04-methods.html    ← 含 data-svg-src 占位符，不含 SVG 代码
   ...
@@ -536,25 +506,22 @@ verify-output.txt         ← Python 验证摘要（仅有数据时）
 
 #### 阶段一：依次生成并保存内容文件
 
-**① 报告正文 HTML 片段** — Claude 直接生成 HTML，不经 Markdown 转换。
+**① 报告正文 HTML 片段** — Agent 直接生成 HTML，不经 Markdown 转换。
 
-单文件 vs 分段生成
+##### 单文件 vs 分段生成
 
-<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>情形</p></th><th colspan="1" rowspan="1"><p>策略</p></th><th colspan="1" rowspan="1"><p>文件命名</p></th></tr><tr><td colspan="1" rowspan="1"><p>短报告（≤ 5 章节，内容量小）</p></td><td colspan="1" rowspan="1"><p><strong>单文件</strong>：直接生成 <code>report-body.html</code></p></td><td colspan="1" rowspan="1"><p><code>report-body.html</code></p></td></tr><tr><td colspan="1" rowspan="1"><p>长报告（&gt; 5 章节，或引言/讨论等节内容丰富）</p></td><td colspan="1" rowspan="1"><p><strong>分段生成</strong>：每章一个 HTML 片段，存入 <code>body-parts/</code> 目录</p></td><td colspan="1" rowspan="1"><p><code>body-01-header.html</code>、<code>body-02-intro.html</code>…</p></td></tr></tbody></table>
+| 情形 | 策略 | 文件命名 |
+|------|------|---------|
+| 短报告（≤ 5 章节，内容量小） | **单文件**：直接生成 `report-body.html` | `report-body.html` |
+| 长报告（> 5 章节，或引言/讨论等节内容丰富） | **分段生成**：每章一个 HTML 片段，存入 `/outputs/XXXX报告名/body-parts/` 目录 | `body-01-header.html`、`body-02-intro.html`… |
 
 **分段生成的原则**：
-
--   每个片段独立保存，Claude 逐个生成后暂存，不需要在单次输出中完成全部内容
-    
--   每个片段都是纯 HTML 片段（不含 `<html>/<head>/<body>` 标签）
-    
--   片段之间**无需**任何包裹容器，`build_html.py` 会按文件名升序直接拼接
-    
--   **封面/摘要/目录/布局开头**放在 `body-01-header.html`，**footer/悬浮目录/移动导航/验证面板骨架**放在最后一个片段（如 `body-10-footer.html`），中间各节按顺序编号
-    
+- 每个片段独立保存，Agent 逐个生成后暂存，不需要在单次输出中完成全部内容
+- 每个片段都是纯 HTML 片段（不含 `<html>/<head>/<body>` 标签）
+- 片段之间**无需**任何包裹容器，`build_html.py` 会按文件名升序直接拼接
+- **封面/摘要/目录/布局开头**放在 `body-01-header.html`，**footer/悬浮目录/移动导航/验证面板骨架**放在最后一个片段（如 `body-10-footer.html`），中间各节按顺序编号
 
 **推荐分段方案**（长报告）：
-
 ```
 body-parts/
   body-01-header.html      封面 + 摘要 + 目录 + <div class="report-layout"><main class="page">
@@ -571,7 +538,7 @@ body-parts/
 
 > ⚠️ **注意**：`body-01-header.html` 必须包含 `<div class="report-layout">` 和 `<main class="page">` 的**开始标签**；`body-10-footer.html` 必须包含对应的**闭合标签** `</main></div>`，以确保整体 DOM 结构完整。
 
-**①** `report-body.html`**（单文件模式）** 或 `body-parts/body-NN-*.html`**（分段模式）**
+**① `report-body.html`（单文件模式）** 或 **`body-parts/body-NN-*.html`（分段模式）**
 
 结构约定（必须遵守，脚本靠这些 id/class 注入内容）：
 
@@ -696,7 +663,7 @@ body-parts/
 </aside>
 ```
 
-**②** `charts-init.js` — 仅当有图表时生成，内含 Chart.js 初始化代码：
+**② `charts-init.js`** — 仅当有图表时生成，内含 Chart.js 初始化代码：
 
 ```javascript
 // SWD原则配置；canvas id 与 report-body.html 中保持一致
@@ -722,8 +689,7 @@ if (ctx1) {
 }
 ```
 
-**③** `verify-output.txt` — 运行 `auto_verify.py` 后的输出，格式：
-
+**③ `verify-output.txt`** — 运行 `auto_verify.py` 后的输出，格式：
 ```
 【统计摘要】
 ...
@@ -731,27 +697,25 @@ if (ctx1) {
 ...
 ```
 
-**④** `flowchart.svg` **/** `apparatus.svg` **等** — SVG 流程图独立文件，保存在与正文片段**同一目录**。正文 HTML 只写 `data-svg-src` 占位符，`build_html.py` 在拼装时自动注入。详见「SVG独立文件+注入机制」一节。
+**④ `flowchart.svg` / `apparatus.svg` 等** — SVG 流程图独立文件，保存在与正文片段**同一目录**。正文 HTML 只写 `data-svg-src` 占位符，`build_html.py` 在拼装时自动注入。详见「SVG独立文件+注入机制」一节。
 
 #### 阶段二：运行拼装脚本
 
 **单文件模式**：
-
 ```bash
 python scripts/build_html.py \
   --body    report-body.html \
-  --output  /mnt/user-data/outputs/report.html \
+  --output  /outputs/XXXX报告名/report.html \
   [--charts charts-init.js] \
   [--verify verify-output.txt]
 # SVG 自动在 report-body.html 同目录查找
 ```
 
 **分段模式**（推荐长报告使用）：
-
 ```bash
 python scripts/build_html.py \
-  --body-dir body-parts/ \
-  --output   /mnt/user-data/outputs/report.html \
+  --body-dir /outputs/XXXX报告名/body-parts/ \
+  --output   /outputs/XXXX报告名/report.html \
   [--charts  charts-init.js] \
   [--verify  verify-output.txt]
 # SVG 自动在 body-parts/ 目录查找；若在别处用 --svg-dir 指定
@@ -762,45 +726,42 @@ python scripts/build_html.py \
 #### 阶段三：输出文件
 
 ```bash
-present_files /mnt/user-data/outputs/report.html
+present_files /outputs/XXXX报告名/report.html
 ```
 
 ### 风格说明
 
 `assets/report.css` 已包含：
+- 默认暖墨纸风格（`:root` CSS 变量）
+- 响应式断点（1280 / 1024 / 768 / 480 / 360px）
+- 系统深色模式自动适配（`@media prefers-color-scheme: dark`）
+- 打印优化
 
--   默认暖墨纸风格（`:root` CSS 变量）
-    
--   响应式断点（1280 / 1024 / 768 / 480 / 360px）
-    
--   系统深色模式自动适配（`@media prefers-color-scheme: dark`）
-    
--   打印优化
-    
+**色彩主题**：由 `build_html.py` 的 `--theme` 参数控制（详见「第一步（补）」主题注入规则）。Agent 无需读取 `references/style-constitution.md`，除非用户要求**自定义**非预置的风格。
 
-**色彩主题**：由 `build_html.py` 的 `--theme` 参数控制（详见「第一步（补）」主题注入规则）。Claude 无需读取 `references/style-constitution.md`，除非用户要求**自定义**非预置的风格。
-
-<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>输出格式</p></th><th colspan="1" rowspan="1"><p>生成方式</p></th><th colspan="1" rowspan="1"><p>何时使用</p></th></tr><tr><td colspan="1" rowspan="1"><p>HTML</p></td><td colspan="1" rowspan="1"><p>上述三阶段流程</p></td><td colspan="1" rowspan="1"><p>默认，所有报告</p></td></tr><tr><td colspan="1" rowspan="1"><p>Markdown</p></td><td colspan="1" rowspan="1"><p>直接生成</p></td><td colspan="1" rowspan="1"><p>用户明确要求纯文本草稿</p></td></tr><tr><td colspan="1" rowspan="1"><p>Word (.docx)</p></td><td colspan="1" rowspan="1"><p>读取 docx skill</p></td><td colspan="1" rowspan="1"><p>用户要求可编辑 Word 文档</p></td></tr></tbody></table>
+| 输出格式 | 生成方式 | 何时使用 |
+|----------|----------|----------|
+| HTML | 上述三阶段流程 | 默认，所有报告 |
+| Markdown | 直接生成 | 用户明确要求纯文本草稿 |
+| Word (.docx) | 读取 docx skill | 用户要求可编辑 Word 文档 |
 
 若用户提供 Markdown/Word，提示："可以将这份报告转换为期刊风格 HTML 版本，是否需要？"
 
-* * *
+---
 
 ## 执行检查清单
 
 生成报告前，逐项确认：
 
 **阶段零：确认**
-
 - [ ] 已调用 `ask_user_input` 工具展示四个确认选项（文档模式 / 可视化内容 / 附加输出 / 色彩主题）
 - [ ] 已根据用户回答设定 `MODE_LONG` / `NEED_SVG` / `NEED_CHART` / `NEED_MD` / `THEME`
 - [ ] `THEME≠default` → `build_html.py` 命令已加 `--theme <值>`（无需读取 CSS 文件）
 
 **阶段一：内容生成**
-
 - [ ] 场景类型已识别，章节结构已裁剪
 - [ ] 必须信息已收集，缺失项已用占位符处理
-- [ ] 判断报告长度：≤5章节→单文件 `report-body.html`；>5章节或内容量大→分段生成至 `body-parts/`
+- [ ] 判断报告长度：≤5章节→单文件 `report-body.html`；>5章节或内容量大→分段生成至 `/outputs/XXXX报告名/body-parts/`
 - [ ] 单文件：`report-body.html` 含 `.report-layout`、`.page`、`.float-toc`、移动端导航、验证面板骨架
 - [ ] 分段：`body-01-header.html` 含布局开始标签，最后一个片段含闭合标签及全部悬浮元素
 - [ ] 所有 `section id` 与目录 `a[href]` 一一对应（跨分段也需对应）
@@ -812,23 +773,32 @@ present_files /mnt/user-data/outputs/report.html
 - [ ] SVG 流程图（若有）已单独保存为 `.svg` 文件（如 `flowchart.svg`），与正文片段同目录；对应 `<figure>` 使用 `data-svg-src` 占位符，**不内嵌 SVG 代码**
 - [ ] 偏差 > 20% → 已在生成报告前告知用户并确认继续
 - [ ] 偏差 > 5% → 「讨论」节已补充偏差分析段落
-- [ ] 引言、原理、讨论各节已通过 web\_search 搜索权威文献
+- [ ] 引言、原理、讨论各节已通过 web_search 搜索权威文献
 - [ ] 所有引用均有可访问URL或DOI，无虚构文献
 - [ ] 参考文献按 GB/T 7714-2015 格式排列，含链接
 
 **阶段二：拼装**
-
-- [ ] 已运行 `build_html.py`（单文件用 `--body`，分段用 `--body-dir body-parts/`）
+- [ ] 已运行 `build_html.py`（单文件用 `--body`，分段用 `--body-dir /outputs/XXXX报告名/body-parts/`）
 - [ ] 脚本输出无 `[WARN]`（assets/report.css 和 report.js 均已找到）
 
 **阶段三：输出**
-
 - [ ] 已调用 `present_files` 向用户提供 HTML 文件下载
 
-* * *
+---
 
 ## 参考文件索引
 
-<table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>文件</p></th><th colspan="1" rowspan="1"><p>内容</p></th><th colspan="1" rowspan="1"><p>何时读取</p></th></tr><tr><td colspan="1" rowspan="1"><p><code>references/html-template.md</code></p></td><td colspan="1" rowspan="1"><p>HTML结构参考骨架</p></td><td colspan="1" rowspan="1"><p>生成 <code>report-body.html</code> 时参照结构</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/style-constitution.md</code></p></td><td colspan="1" rowspan="1"><p>风格宪法框架 + 6套预置风格</p></td><td colspan="1" rowspan="1"><p>用户指定非默认风格时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/svg-flowchart-template.md</code></p></td><td colspan="1" rowspan="1"><p>SVG流程图模板和规范（含 <code>orient="auto"</code> 箭头方向核心机制）</p></td><td colspan="1" rowspan="1"><p>需要绘制流程图时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/swd-chartjs-examples.md</code></p></td><td colspan="1" rowspan="1"><p>SWD原则Chart.js示例</p></td><td colspan="1" rowspan="1"><p>生成 <code>charts-init.js</code> 时参照</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>references/gbt7714-reference-guide.md</code></p></td><td colspan="1" rowspan="1"><p>GB/T 7714格式详细规范与示例</p></td><td colspan="1" rowspan="1"><p>撰写参考文献节时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>assets/report.css</code></p></td><td colspan="1" rowspan="1"><p>完整CSS（样式/响应式/深色模式/编辑器）</p></td><td colspan="1" rowspan="1"><p>由 <code>build_html.py</code> 自动读取，Claude不需读</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>assets/report.js</code></p></td><td colspan="1" rowspan="1"><p>所有交互JS（目录/验证面板/内联编辑器）</p></td><td colspan="1" rowspan="1"><p>由 <code>build_html.py</code> 自动读取，Claude不需读</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/auto_verify.py</code></p></td><td colspan="1" rowspan="1"><p>CSV/表格数据自动验证脚本</p></td><td colspan="1" rowspan="1"><p>有CSV或粘贴表格数据时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/verify_data.py</code></p></td><td colspan="1" rowspan="1"><p>手动填写的验证脚本模板</p></td><td colspan="1" rowspan="1"><p>有数值+公式但无CSV时</p></td></tr><tr><td colspan="1" rowspan="1"><p><code>scripts/build_html.py</code></p></td><td colspan="1" rowspan="1"><p>HTML拼装脚本</p></td><td colspan="1" rowspan="1"><p>阶段二运行</p></td></tr></tbody></table>
+| 文件 | 内容 | 何时读取 |
+|------|------|----------|
+| `references/html-template.md` | HTML结构参考骨架 | 生成 `report-body.html` 时参照结构 |
+| `references/style-constitution.md` | 风格宪法框架 + 6套预置风格 | 用户指定非默认风格时 |
+| `references/svg-flowchart-template.md` | SVG流程图模板和规范（含 `orient="auto"` 箭头方向核心机制） | 需要绘制流程图时 |
+| `references/swd-chartjs-examples.md` | SWD原则Chart.js示例 | 生成 `charts-init.js` 时参照 |
+| `references/gbt7714-reference-guide.md` | GB/T 7714格式详细规范与示例 | 撰写参考文献节时 |
+| `assets/report.css` | 完整CSS（样式/响应式/深色模式/编辑器） | 由 `build_html.py` 自动读取，Agent不需读 |
+| `assets/report.js` | 所有交互JS（目录/验证面板/内联编辑器） | 由 `build_html.py` 自动读取，Agent不需读 |
+| `scripts/auto_verify.py` | CSV/表格数据自动验证脚本 | 有CSV或粘贴表格数据时 |
+| `scripts/verify_data.py` | 手动填写的验证脚本模板 | 有数值+公式但无CSV时 |
+| `scripts/build_html.py` | HTML拼装脚本 | 阶段二运行 |
 
-* * *
+---
