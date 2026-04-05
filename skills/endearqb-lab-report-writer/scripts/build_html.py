@@ -112,7 +112,31 @@ THEMES = {
   --soft-alt:  #1a2332;
   --soft-blue: #172033;
   --accent:    #c9a84c;
+  --accent-dark: #b8943e;
   --shadow:    0 18px 48px rgba(0,0,0,0.40);
+  /* 警示色系 */
+  --warn-text:   #fb923c;
+  --warn-border: #f59e0b;
+  --warn-accent: #d97706;
+  /* 徽章色系 */
+  --badge-ok-bg:    #14532d;
+  --badge-ok-text:  #bbf7d0;
+  --badge-warn-bg:  #78350f;
+  --badge-warn-text:#fde68a;
+  /* SVG 配色 */
+  --svg-node-bg:        #1e2a3a;
+  --svg-node-alt:       #1a2d28;
+  --svg-node-data:      #1a2232;
+  --svg-node-warn:      #2d1f1f;
+  --svg-diamond-bg:     #2a2210;
+  --svg-diamond-stroke: #c9a84c;
+  --svg-stroke:         #4a5568;
+  --svg-arrow:          #c9a84c;
+  --svg-start-bg:       #c9a84c;
+  --svg-end-bg:         #30363d;
+  --svg-text:           #e6edf3;
+  --svg-text-sub:       #7d8590;
+  --svg-start-text:     #0d1117;
 }
 body {
   background:
@@ -156,7 +180,31 @@ a { color: var(--accent); }""",
   --soft-alt:  #e8f4fd;
   --soft-blue: #ebf5fb;
   --accent:    #1a6eb5;
+  --accent-dark: #155a94;
   --shadow:    0 8px 32px rgba(0,0,0,0.08);
+  /* 警示色系 */
+  --warn-text:   #c2410c;
+  --warn-border: #ea580c;
+  --warn-accent: #d97706;
+  /* 徽章色系 */
+  --badge-ok-bg:    #dcfce7;
+  --badge-ok-text:  #166534;
+  --badge-warn-bg:  #fef3c7;
+  --badge-warn-text:#92400e;
+  /* SVG 配色 */
+  --svg-node-bg:        #f1f3f5;
+  --svg-node-alt:       #e8f4fd;
+  --svg-node-data:      #ebf5fb;
+  --svg-node-warn:      #fde8e8;
+  --svg-diamond-bg:     #fef9e7;
+  --svg-diamond-stroke: #d4a017;
+  --svg-stroke:         #adb5bd;
+  --svg-arrow:          #1a6eb5;
+  --svg-start-bg:       #1a6eb5;
+  --svg-end-bg:         #212529;
+  --svg-text:           #212529;
+  --svg-text-sub:       #6c757d;
+  --svg-start-text:     #ffffff;
 }
 body {
   background: var(--paper);
@@ -198,7 +246,31 @@ a { color: #1a6eb5; }""",
   --soft-alt:  #edf0e5;
   --soft-blue: #edf2e8;
   --accent:    #4a6741;
+  --accent-dark: #3a5433;
   --shadow:    0 16px 44px rgba(44,42,30,0.11);
+  /* 警示色系 */
+  --warn-text:   #92400e;
+  --warn-border: #b45309;
+  --warn-accent: #b45309;
+  /* 徽章色系 */
+  --badge-ok-bg:    #d1fae5;
+  --badge-ok-text:  #065f46;
+  --badge-warn-bg:  #fef3c7;
+  --badge-warn-text:#78350f;
+  /* SVG 配色 */
+  --svg-node-bg:        #ebf1e8;
+  --svg-node-alt:       #dae7d4;
+  --svg-node-data:      #edf2e6;
+  --svg-node-warn:      #f9eae0;
+  --svg-diamond-bg:     #fdf5e0;
+  --svg-diamond-stroke: #b38f2a;
+  --svg-stroke:         #8a8570;
+  --svg-arrow:          #4a6741;
+  --svg-start-bg:       #4a6741;
+  --svg-end-bg:         #2c2a1e;
+  --svg-text:           #2c2a1e;
+  --svg-text-sub:       #6b6550;
+  --svg-start-text:     #fefdfb;
 }
 body {
   background:
@@ -210,10 +282,10 @@ body {
 /* 表格 */
 th { background: #3d5735; color: #f5f3ec; }
 td { border-bottom-color: #ddd8c4; }
-tbody tr:nth-child(even) td { background: #f3f1e8; }
+tbody tr:nth-child(even) td { background: #e6ece3; }
 /* 摘要、目录、引用块 */
 .abstract { background: #edf0e5; border-left-color: #4a6741; }
-.toc { background: #f4f2ea; border-color: var(--line); }
+.toc { background: #ebf1e8; border-color: #b8cdb2; }
 blockquote { background: #edf0e5; border-left-color: #4a6741; color: var(--muted); }
 /* 公式、验证框 */
 .formula { background: #edf2e8; border-color: #c4cebc; }
@@ -221,7 +293,7 @@ blockquote { background: #edf0e5; border-left-color: #4a6741; color: var(--muted
 /* 提示框、图表、元数据卡片 */
 .callout { background: linear-gradient(180deg,#edf0e5 0%,#f4f6ef 100%); border-left-color: #4a6741; }
 .chart-container { background: #f7f5ef; border-color: var(--line); }
-.meta-card { background: linear-gradient(180deg,#eeead8 0%,#e8e4d0 100%); border-color: var(--line); }
+.meta-card { background: linear-gradient(180deg,#dae7d4 0%,#d0dec9 100%); border-color: #b8cdb2; }
 /* 验证面板 */
 .verify-panel-header { background: var(--soft); }
 .verify-panel-header:hover { background: var(--soft-alt); }
@@ -241,7 +313,31 @@ a { color: #4a6741; }""",
   --soft-alt:  #fdf1ee;
   --soft-blue: #f5f5f7;
   --accent:    #9b2335;
+  --accent-dark: #7a1a28;
   --shadow:    0 12px 40px rgba(28,28,30,0.10);
+  /* 警示色系 */
+  --warn-text:   #92400e;
+  --warn-border: #b45309;
+  --warn-accent: #b45309;
+  /* 徽章色系 */
+  --badge-ok-bg:    #dcfce7;
+  --badge-ok-text:  #166534;
+  --badge-warn-bg:  #fef3c7;
+  --badge-warn-text:#92400e;
+  /* SVG 配色 */
+  --svg-node-bg:        #f4eeea;
+  --svg-node-alt:       #fdf1ee;
+  --svg-node-data:      #f5f5f7;
+  --svg-node-warn:      #fde8e8;
+  --svg-diamond-bg:     #fdf5e0;
+  --svg-diamond-stroke: #b45309;
+  --svg-stroke:         #9b8f89;
+  --svg-arrow:          #9b2335;
+  --svg-start-bg:       #9b2335;
+  --svg-end-bg:         #1c1c1e;
+  --svg-text:           #1c1c1e;
+  --svg-text-sub:       #636366;
+  --svg-start-text:     #ffffff;
 }
 body {
   background:
@@ -284,7 +380,31 @@ a { color: #9b2335; }""",
   --soft-alt:  #f0f0f0;
   --soft-blue: #f0f0f4;
   --accent:    #333333;
+  --accent-dark: #1a1a1a;
   --shadow:    0 8px 28px rgba(0,0,0,0.08);
+  /* 警示色系 */
+  --warn-text:   #92400e;
+  --warn-border: #b45309;
+  --warn-accent: #b45309;
+  /* 徽章色系 */
+  --badge-ok-bg:    #e5e5e5;
+  --badge-ok-text:  #1a1a1a;
+  --badge-warn-bg:  #f0ebe0;
+  --badge-warn-text:#5a3e0a;
+  /* SVG 配色 */
+  --svg-node-bg:        #ebebeb;
+  --svg-node-alt:       #e5ede5;
+  --svg-node-data:      #e5e5f0;
+  --svg-node-warn:      #f0e5e5;
+  --svg-diamond-bg:     #f5f0e0;
+  --svg-diamond-stroke: #999999;
+  --svg-stroke:         #999999;
+  --svg-arrow:          #333333;
+  --svg-start-bg:       #333333;
+  --svg-end-bg:         #1a1a1a;
+  --svg-text:           #1a1a1a;
+  --svg-text-sub:       #666666;
+  --svg-start-text:     #ffffff;
 }
 body {
   background: var(--paper);
