@@ -1,7 +1,7 @@
 ---
 name: lab-report-writer
 metadata:
-  version: 2.2.1
+  version: 2.3.2
 description: |
   撰写期刊风格的实验报告，支持理工科实验课报告、科研论文级实验记录、工程项目技术报告、竞赛展示用报告等全场景。
   用户提供实验信息、数据、方法描述后，生成结构完整、排版专业的报告，并附带Python数据验证脚本对所有计算结论进行复核。
@@ -391,6 +391,10 @@ Step 5  输出验证摘要
    - 严禁彩虹配色
 5. **图表标题**：描述性标题（"处理组效率比对照组高23%"），而非轴标签式（"效率对比"）
 6. **标注优于图例**：直接在数据点旁标注系列名称
+7. **多系列量级差异大时，优先分面图（Facet/Small Multiples）**
+   - 上下/左右并排两个小图，共用 X 轴，各用自己的 Y 轴
+   - 避免双 Y 轴（Dual Axis）造成的视觉误导和阅读困难
+   - 若空间受限必须用双 Y 轴，应在左右轴标题用对应数据系列的颜色明确区分
 
 ### Chart.js配置模板
 
@@ -419,6 +423,10 @@ const swdDefaults = {
 - 字体：Georgia（中文：Noto Serif SC）
 - 箭头颜色：`#2f4f4f`
 - 每个步骤方框：`rx="12"` 圆角，`stroke="#283239"` 边框
+- **SVG `<text>` 内禁止嵌套任何 HTML 标签**（如 `<strong>`、`<sub>`、`<em>`）
+  - 粗体用 `font-weight="bold"` 属性，或嵌套 `<tspan font-weight="bold">`
+  - 下标用 `<tspan baseline-shift="sub" font-size="0.75em">`
+  - HTML 标签会导致浏览器解析器将其"提升"出 SVG，文字渲染在页面正文流中
 - 详细模板参见 `references/svg-flowchart-template.md`
 
 #### SVG 独立文件 + 注入机制
