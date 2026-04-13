@@ -16,16 +16,16 @@ build_html.py - Lab Report HTML Assembler
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 用法 A（单文件，传统模式）：
-  python build_html.py --body   report-body.html \
-                       --output /mnt/user-data/outputs/report.html \
+  python build_html.py --body   /outputs/XXXX报告名/report-body.html \
+                       --output /outputs/XXXX报告名/report.html \
                        [--theme  dark] \
                        [--charts  charts-init.js] \
                        [--verify  verify-output.txt] \
                        [--svg-dir svgs/]
 
 用法 B（多分段，按文件名排序自动合并）：
-  python build_html.py --body-dir ./body-parts/ \
-                       --output /mnt/user-data/outputs/report.html \
+  python build_html.py --body-dir /outputs/XXXX报告名/body-parts/ \
+                       --output /outputs/XXXX报告名/report.html \
                        [--theme  olive] \
                        [--charts  charts-init.js] \
                        [--verify  verify-output.txt] \
@@ -45,7 +45,7 @@ build_html.py - Lab Report HTML Assembler
 
 用法 C（多分段，手动指定顺序）：
   python build_html.py --body-parts body-01.html body-02.html body-03.html \
-                       --output /mnt/user-data/outputs/report.html
+                       --output /outputs/XXXX报告名/report.html
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 主题参数 --theme：
@@ -461,6 +461,10 @@ def parse_args():
     p.add_argument('--assets',  default=None, help='assets/ 目录路径，默认自动推断')
     p.add_argument('--svg-dir', default=None,
                    help='SVG 文件所在目录，默认与正文文件同目录')
+    p.add_argument('--editable', action='store_true', default=False,
+                   help='启用内联文本编辑器（默认关闭）')
+    p.add_argument('--no-verify-panel', action='store_true', default=False,
+                   help='不渲染数据验证悬浮面板（跳过数据验证时使用）')
     return p.parse_args()
 
 
@@ -618,8 +622,25 @@ def get_theme_css(theme_key):
     return css
 
 
-def assemble(body_html, css, theme_css, js, charts_js, verify_text, title):
+def assemble(body_html, css, theme_css, js, charts_js, verify_text, title,
+             editable=False, no_verify_panel=False):
     body_html = slot_verify(body_html, verify_text)
+
+    # 如果不显示验证面板，移除验证面板 HTML 骨架
+    if no_verify_panel:
+        body_html = re.sub(
+            r'<!--\s*验证面板.*?-->\s*<aside[^>]*id="verifyPanel"[^>]*>.*?</aside>',
+            '',
+            body_html,
+            flags=re.DOTALL
+        )
+        # 备用：直接匹配 aside#verifyPanel（无注释时）
+        body_html = re.sub(
+            r'<aside[^>]*id="verifyPanel"[^>]*>.*?</aside>',
+            '',
+            body_html,
+            flags=re.DOTALL
+        )
 
     if not title:
         m = re.search(r'<h1[^>]*>(.*?)</h1>', body_html)
@@ -627,6 +648,7 @@ def assemble(body_html, css, theme_css, js, charts_js, verify_text, title):
 
     charts_block = f'<script>\n{charts_js}\n</script>' if charts_js.strip() else ''
     theme_block  = f'<style>\n{theme_css}\n</style>' if theme_css.strip() else ''
+    editable_attr = ' data-editable="true"' if editable else ''
 
     return f'''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -645,7 +667,7 @@ def assemble(body_html, css, theme_css, js, charts_js, verify_text, title):
 </style>
 {theme_block}
 </head>
-<body>
+<body{editable_attr}>
 
 {body_html}
 
@@ -679,7 +701,8 @@ def main():
     verify_text = read_file(args.verify,  '验证摘要') if args.verify else ''
 
     print(f'[build_html] assets={assets_dir}, svg_dir={svg_dir}')
-    html = assemble(body_html, css, theme_css, js, charts_js, verify_text, args.title)
+    html = assemble(body_html, css, theme_css, js, charts_js, verify_text, args.title,
+                    editable=args.editable, no_verify_panel=args.no_verify_panel)
 
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
