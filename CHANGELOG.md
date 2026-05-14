@@ -2,7 +2,10 @@
 
 ### endearqb-community-profiler
 
--   **Added**: 新增社区成员画像分析技能，支持从群聊记录中识别核心贡献者、潜水者、活跃用户和 KOL，生成五维画像评分并输出可视化报告。
+| 版本 | 日期 | 变更 |
+|------|------|------|
+| 4.1.0 | 2026-05-15 | **Viewer 数据契约对齐**：新增独立 `assets/viewer.html` 查看器资产，Skill 输出流程改为生成 `report.json` 后复制 Viewer 并优先呈现；删除旧版 `html-template-guide.md` HTML 注入模板；补充 `community_health.top_assets` 字段规范，明确 `shared_by` 必须始终为字符串数组，并说明 `failed_assets` 仅作审计/调试保留。 |
+| 4.0.0 | — | **Added**: 新增社区成员画像分析技能，支持从群聊记录中识别核心贡献者、潜水者、活跃用户和 KOL，生成五维画像评分并输出可视化报告。 |
 
 ### endearqb-svg-flowchart
 

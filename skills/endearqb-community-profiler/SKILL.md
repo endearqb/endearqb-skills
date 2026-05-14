@@ -1,5 +1,7 @@
 ---
 name: community-profiler
+metadata:
+  version: 4.1.0
 description: >
   技术讨论群成员画像与评估 Skill。当用户提供群聊记录（文本粘贴、截图、JSON/CSV 均可）并要求分析成员、给成员打分、评估社区健康度、
   找出核心贡献者/潜水者/活跃用户/KOL、生成成员影响力排名、识别僵尸用户、分析群运营健康度、总结群聊内容等时，必须触发本 Skill。
@@ -8,7 +10,7 @@ description: >
   即使用户只说"帮我分析一下这个群"或"看看谁最活跃"或"总结一下群里聊了什么"，也应触发本 Skill。
 ---
 
-# Community Profiler v3 — 技术社区成员画像与评估
+# Community Profiler v4.1.0 — 技术社区成员画像与评估
 
 ## 概述
 
@@ -17,11 +19,44 @@ description: >
 - **个人研究**：社区生态与知识流动分析
 - **团队协作**：成员贡献与角色识别
 
-**固定输出：**
-1. `report.json` — 结构化成员画像数据（必须）
-2. `report.html` — shadcn 风格可视化报告，含性能优化（默认）
+---
+
+## 输出架构（JSON + Viewer 分离）
+
+本技能采用 **数据与视图分离** 架构：
+
+### 输出文件
+1. `report.json` — AI 分析结果的唯一结构化输出（**必须**）
+2. `viewer.html` — 从 `assets/viewer.html` 复制到输出目录的独立可视化查看器（**自动**）
 3. `report.md` — 文字分析报告（仅用户明确要求时）
 4. `assets/` — 抓取的链接/图片内容（有外部资源时）
+
+### 输出流程（严格按此顺序）
+
+```
+Step A：分析群聊 → 生成 report.json → 保存到输出目录
+Step B：从技能 assets/ 复制 viewer.html 到输出目录（与 report.json 同级）
+Step C：使用 present_files 将 viewer.html（第一个）和 report.json 呈现给用户
+```
+
+### 关键命令序列
+
+```bash
+# 1. 创建输出目录
+OUTPUT_DIR="/mnt/user-data/outputs/groupchat/$(date +%Y-%m-%d_%H%M%S)"
+mkdir -p "$OUTPUT_DIR"
+
+# 2. 保存 report.json（由 AI 分析生成，用 create_file 写入）
+# → $OUTPUT_DIR/report.json
+
+# 3. 复制 viewer.html 到输出目录
+cp /mnt/skills/user/community-profiler/assets/viewer.html "$OUTPUT_DIR/viewer.html"
+
+# 4. 通过 present_files 呈现给用户
+# present_files(["$OUTPUT_DIR/viewer.html", "$OUTPUT_DIR/report.json"])
+```
+
+> ⚠️ **重要**：viewer.html 和 report.json 必须在同一目录下。viewer.html 通过 `fetch('./report.json')` 自动加载数据。
 
 所有文件保存至 `groupchat/YYYY-MM-DD_HHMMSS/`（按分析时间戳新建）。
 
@@ -155,9 +190,9 @@ assets/
 
 ---
 
-## Step 5：聊天内容总结（新增）
+## Step 5：聊天内容总结
 
-在完成成员评分后，对全量消息进行一次内容层面的分析，输出到 JSON 的 `content_summary` 字段和 HTML 对应章节。
+在完成成员评分后，对全量消息进行一次内容层面的分析，输出到 JSON 的 `content_summary` 字段。
 
 ### 5.1 核心议题摘要
 
@@ -207,60 +242,22 @@ assets/
 
 ---
 
-## Step 7：输出 HTML 报告
+## Step 7：输出 report.json
 
-**设计规范：shadcn/ui 风格**，详见 `references/html-template-guide.md`。
-
-### 性能优化（三层叠加）
-
-**① 骨架屏**：页面加载时先渲染占位骨架，数据就绪后替换。
-```javascript
-// 骨架占位 → requestAnimationFrame 批量渲染真实内容
-requestAnimationFrame(() => renderSection('members'));
-```
-
-**② 虚拟滚动**（成员数 > 30 时启用）：
-```javascript
-// 只渲染 visibleStart ~ visibleEnd 范围的成员卡片
-// 其余用等高空白占位，监听 scroll 事件动态更新
-```
-
-**③ 按需展开**：
-- 成员卡片默认只显示：排名、昵称、综合分、角色标签、风险等级
-- 点击卡片后展开：五维条形图、代表发言、风险因素
-
-### 章节顺序
-
-1. 顶部概览栏（含无时间戳警告、过滤说明）
-2. **聊天内容总结**
-   - 核心议题卡片组
-   - 精华发言时间轴
-   - 共识 vs 分歧
-   - 行动项清单
-3. 成员排行榜（虚拟滚动）
-4. KOL 推荐面板
-5. 知识覆盖矩阵
-6. 资产热榜
-7. 社区生态分布
-8. 社区健康评估
-
-### shadcn 设计规范
-
-详见 `references/html-template-guide.md` 的完整实现。核心原则：
-- 色板：neutral 灰阶为主，单一强调色（blue-600 或 zinc-900）
-- 字体：Geist 或 Inter，严格字重层级
-- 圆角：`border-radius: 8px`（卡片）/ `6px`（徽章）
-- 阴影：`0 1px 3px rgba(0,0,0,0.1)` 轻阴影，不用重阴影
-- 边框：`1px solid hsl(var(--border))`
-- 背景：浅色主题（白底 + 灰色卡片），支持 dark mode CSS 变量
-
----
-
-## Step 8：report.json 结构（含新增字段）
+### 完整 JSON 结构
 
 ```json
 {
-  "analysis_meta": { ... },
+  "analysis_meta": {
+    "generated_at": "2025-05-14 12:00:00",
+    "total_messages": 150,
+    "member_count": 12,
+    "spam_messages_filtered": 5,
+    "has_timestamp": true,
+    "weight_mode": "standard",
+    "source_format": "wechat_text",
+    "bots_excluded": []
+  },
   "content_summary": {
     "topics": [
       {
@@ -291,11 +288,108 @@ requestAnimationFrame(() => renderSection('members'));
       { "proposer": "昵称", "action": "行动内容", "target": "涉及对象" }
     ]
   },
-  "members": [ ... ],
-  "community_health": { ... },
+  "members": [
+    {
+      "nickname": "成员昵称",
+      "scores": {
+        "composite": 75,
+        "activity": 60,
+        "content_quality": 80,
+        "interaction_influence": 70,
+        "professional_authority": 85,
+        "community_stickiness": 50
+      },
+      "roles": ["🎯 核心贡献者"],
+      "churn_risk_level": "low",
+      "risk_factors": [],
+      "highlights": ["代表性发言原文"],
+      "tech_domains": ["Go", "Docker"],
+      "stats": {
+        "message_count": 25,
+        "reply_count": 10,
+        "mentioned_count": 5,
+        "links_shared": 3,
+        "active_days": 7
+      }
+    }
+  ],
+  "community_health": {
+    "kol_candidates": [
+      {
+        "nickname": "昵称",
+        "composite_score": 85,
+        "kol_signals": ["高内容质量", "被多人 @ 引用"],
+        "tech_domains": ["AI", "Python"],
+        "recommended_for": "技术分享嘉宾"
+      }
+    ],
+    "risk_summary": { "high": 2, "medium": 3, "low": 7 },
+    "knowledge_coverage": {
+      "领域名": { "level": "covered|weak|gap", "experts": ["昵称"] }
+    },
+    "core_periphery_layers": {
+      "core": ["核心成员"],
+      "active": ["活跃成员"],
+      "peripheral": ["边缘成员"]
+    },
+    "topic_clusters": ["话题1", "话题2"],
+    "activity_trend": "上升|稳定|下降",
+    "top_assets": [
+      {
+        "title": "资源标题",
+        "url": "https://example.com",
+        "summary": "资源摘要",
+        "share_count": 3,
+        "shared_by": ["昵称A", "昵称B"],
+        "fetch_status": "success|failed_403|failed_timeout|failed_paywall|dead_link"
+      }
+    ],
+    "health_notes": "社区健康评估文字描述"
+  },
   "failed_assets": []
 }
 ```
+
+### top_assets 字段约束
+
+- `top_assets` 为空时必须输出 `[]`。
+- `top_assets[].shared_by` 必须始终是字符串数组；没有可识别分享者时输出 `[]`，不要输出字符串。
+- 抓取失败但仍值得展示的资源可以保留在 `top_assets` 中，并用非 `success` 的 `fetch_status` 标注。
+- `failed_assets` 保留为原始失败清单，供审计和调试使用；当前 `viewer.html` 不直接渲染该字段。
+
+---
+
+## Step 8：部署 Viewer 并呈现给用户
+
+完成 report.json 后，**必须**执行以下操作：
+
+```bash
+# 复制 viewer.html 到输出目录
+cp /mnt/skills/user/community-profiler/assets/viewer.html "$OUTPUT_DIR/viewer.html"
+```
+
+然后使用 `present_files` 工具呈现文件，**viewer.html 优先作为第一个文件**：
+
+```python
+present_files(["$OUTPUT_DIR/viewer.html", "$OUTPUT_DIR/report.json"])
+```
+
+### Viewer 工作原理
+
+`assets/viewer.html` 是一个独立的可视化报告查看器，直接消费 `report.json`：
+- **自动加载**：通过 `fetch('./report.json')` 加载同目录的数据文件
+- **URL 参数**：支持 `?data=路径` 指定不同 JSON 文件
+- **文件上传回退**：若 fetch 失败，显示文件选择器供手动上传 JSON
+- **主题切换**：支持 light/dark 主题切换
+- **导出功能**：可重新导出当前加载的 JSON 数据
+- **成员排行**：按 `members[].scores.composite` 排序，展示前三名、完整成员列表和五维雷达图
+- **详情展开**：成员列表点击后展开五维评分、代表发言、技术领域、统计数据和风险因素
+- **运营面板**：展示 KOL 候选、风险分布、知识覆盖、角色分布、活跃度分布和社区健康结论
+- **资源热榜**：展示 `community_health.top_assets`，其中 `shared_by` 按数组渲染为分享者列表
+
+### ⚠️ 不要自行生成 HTML 报告
+
+与 v3 版本不同，**不再需要**在 AI 输出中生成完整 HTML。viewer.html 是预置的静态资产，只需复制到输出目录即可。AI 只负责生成 report.json 数据。
 
 ---
 
@@ -314,11 +408,11 @@ requestAnimationFrame(() => renderSection('members'));
 | 无时间戳 | Step 0.3 自动切换 |
 | 非技术群 | "专业权威"改"领域权威"，向用户说明 |
 | 时区未知 | 默认 UTC+8 |
-| 大型记录 > 1000 条 | 启用分块处理，HTML 强制虚拟滚动 |
+| 大型记录 > 1000 条 | 启用分块处理，viewer 已内置虚拟滚动 |
 
 ---
 
 ## 参考文件
 
-- `references/html-template-guide.md` — shadcn 风格 HTML 报告完整实现（骨架屏 + 虚拟滚动 + 按需展开）
+- `assets/viewer.html` — 独立可视化报告查看器，自动加载并渲染同目录 `report.json`
 - `references/scoring-examples.md` — 各维度典型评分案例
