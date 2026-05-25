@@ -37,6 +37,10 @@ Each skill directory may contain:
 
 Clone the repository and use the skill directories as local skill packages in your Agent Skills workflow.
 
+## Contributors
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for the manual contributor list.
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.

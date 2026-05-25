@@ -37,6 +37,10 @@ skills/
 
 克隆本仓库后，可将各个 skill 目录作为本地技能包，在 Agent Skills 工作流中直接使用。
 
+## 贡献者
+
+手动维护的贡献者名单见 [CONTRIBUTORS.md](CONTRIBUTORS.md)。
+
 ## 许可证
 
 本项目采用 MIT License 开源，详见 `LICENSE` 文件。
