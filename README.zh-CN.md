@@ -13,7 +13,7 @@
 - `endearqb-community-profiler`：用于群聊记录分析的技能，可生成成员画像、识别核心贡献者、评估社区健康度、总结聊天内容。
 - `endearqb-svg-flowchart`：用于根据文字步骤生成高质量 SVG 流程图的技能，支持垂直/水平布局、判断分支、多列分组流程图，以及可选的 HTML 预览页输出。
 - `endearqb-wechat-file-organizer`：用于整理 Windows 微信文件存储目录的技能，支持自动检测目录、重复文件分析、移入回收站去重，以及按月份和类型分类整理。
-- `endearqb-editorial-card-screenshot`：用于生成编辑部风格的 HTML 信息卡，并按固定比例截图输出 PNG，已补齐中文字体 fallback 与 Chromium 稳定截图链路。
+- `1nfinix-editorial-card-screenshot`：用于生成编辑部风格的 HTML 信息卡，并按固定比例截图输出 PNG，已补齐中文字体 fallback 与 Chromium 稳定截图链路。
 
 ## 目录结构
 
@@ -24,7 +24,7 @@ skills/
   endearqb-community-profiler/
   endearqb-svg-flowchart/
   endearqb-wechat-file-organizer/
-  endearqb-editorial-card-screenshot/
+  1nfinix-editorial-card-screenshot/
 ```
 
 每个 skill 目录通常包含：

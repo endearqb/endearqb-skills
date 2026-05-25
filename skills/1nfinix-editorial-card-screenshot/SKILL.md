@@ -1,5 +1,5 @@
 ---
-name: endearqb-editorial-card-screenshot
+name: 1nfinix-editorial-card-screenshot
 description: "Generate editorial-style HTML information cards and capture them as ratio-specific PNG screenshots. Use when the user wants a research card, info card, briefing card, cover card, or editorial social asset in ratios such as 3:4, 4:3, 1:1, 16:9, 9:16, 2.35:1, 3:1, or 5:2. Includes stable Chinese typography fallback and direct Chromium screenshot capture."
 metadata: {"clawdbot":{"requires":{"bins":["google-chrome","chromium","chrome"]}}}
 ---

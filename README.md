@@ -13,7 +13,7 @@ This repository currently includes:
 - `endearqb-community-profiler`: A skill for analyzing chat records to generate member profiles, identify key contributors, assess community health, and summarize chat content.
 - `endearqb-svg-flowchart`: A skill for generating high-quality SVG flowcharts from textual steps, supporting vertical and horizontal layouts, branch decisions, grouped multi-column flows, and optional HTML preview output.
 - `endearqb-wechat-file-organizer`: A skill for organizing WeChat file storage on Windows, with WeChat directory detection, duplicate-file analysis, recycle-bin deduplication, and month/type-based file organization.
-- `endearqb-editorial-card-screenshot`: A skill for generating editorial-style HTML information cards and capturing them as ratio-specific PNG screenshots, with stable Chinese typography fallback and Chromium screenshot rendering.
+- `1nfinix-editorial-card-screenshot`: A skill for generating editorial-style HTML information cards and capturing them as ratio-specific PNG screenshots, with stable Chinese typography fallback and Chromium screenshot rendering.
 
 ## Repository Structure
 
@@ -24,7 +24,7 @@ skills/
   endearqb-community-profiler/
   endearqb-svg-flowchart/
   endearqb-wechat-file-organizer/
-  endearqb-editorial-card-screenshot/
+  1nfinix-editorial-card-screenshot/
 ```
 
 Each skill directory may contain:
