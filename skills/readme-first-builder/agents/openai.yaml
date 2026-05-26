@@ -1,0 +1,4 @@
+interface:
+  display_name: "Readme First Builder"
+  short_description: "Create and maintain README-first project docs"
+  default_prompt: "Audit the project structure and build or update README-first documentation, indexes, contribution notes, and usage paths."

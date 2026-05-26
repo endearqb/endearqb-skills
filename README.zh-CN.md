@@ -14,6 +14,7 @@
 - `endearqb-svg-flowchart`：用于根据文字步骤生成高质量 SVG 流程图的技能，支持垂直/水平布局、判断分支、多列分组流程图，以及可选的 HTML 预览页输出。
 - `endearqb-wechat-file-organizer`：用于整理 Windows 微信文件存储目录的技能，支持自动检测目录、重复文件分析、移入回收站去重，以及按月份和类型分类整理。
 - `1nfinix-editorial-card-screenshot`：用于生成编辑部风格的 HTML 信息卡，并按固定比例截图输出 PNG，已补齐中文字体 fallback 与 Chromium 稳定截图链路。
+- `readme-first-builder`：用于在项目中初始化或升级 README First 完整架构，包括 `AGENTS.md`、根 README、`.ai/changes`、`.ai/decisions` 与关键目录 README。
 
 ## 目录结构
 
@@ -25,6 +26,7 @@ skills/
   endearqb-svg-flowchart/
   endearqb-wechat-file-organizer/
   1nfinix-editorial-card-screenshot/
+  readme-first-builder/
 ```
 
 每个 skill 目录通常包含：

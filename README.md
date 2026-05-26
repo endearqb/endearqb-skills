@@ -14,6 +14,7 @@ This repository currently includes:
 - `endearqb-svg-flowchart`: A skill for generating high-quality SVG flowcharts from textual steps, supporting vertical and horizontal layouts, branch decisions, grouped multi-column flows, and optional HTML preview output.
 - `endearqb-wechat-file-organizer`: A skill for organizing WeChat file storage on Windows, with WeChat directory detection, duplicate-file analysis, recycle-bin deduplication, and month/type-based file organization.
 - `1nfinix-editorial-card-screenshot`: A skill for generating editorial-style HTML information cards and capturing them as ratio-specific PNG screenshots, with stable Chinese typography fallback and Chromium screenshot rendering.
+- `readme-first-builder`: A skill for initializing or upgrading a project to the README First architecture with `AGENTS.md`, root README guidance, `.ai/changes`, `.ai/decisions`, and key directory READMEs.
 
 ## Repository Structure
 
@@ -25,6 +26,7 @@ skills/
   endearqb-svg-flowchart/
   endearqb-wechat-file-organizer/
   1nfinix-editorial-card-screenshot/
+  readme-first-builder/
 ```
 
 Each skill directory may contain:
