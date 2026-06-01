@@ -86,11 +86,9 @@
     <p>[仪器和试剂列表]</p>
     <h3>3.2 实验步骤</h3>
     <p>[步骤描述]</p>
-    <!-- SVG 流程图（若有，直接内嵌） -->
-    <figure>
-      <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
-        <!-- 参照 svg-flowchart-template.md 绘制 -->
-      </svg>
+    <!-- SVG 流程图（若有）：用 data-svg-src 占位，SVG 存为独立文件，
+         由 build_html.py 在拼装时注入。不要内嵌 SVG 代码。详见 svg-flowchart-template.md -->
+    <figure data-svg-src="flowchart.svg">
       <figcaption>图 1. 实验流程图</figcaption>
     </figure>
   </section>
@@ -231,7 +229,7 @@
 | `h2` 正文标题 | 必须加 `class="section-title"` |
 | 数据表格 | 必须包在 `<div class="table-wrap">` 内（触摸横滚） |
 | 图表 canvas | `id` 须与 `charts-init.js` 中 `getElementById` 调用一致 |
-| SVG 流程图 | 直接内嵌在 `<figure>` 中，不保存为单独文件 |
+| SVG 流程图 | 用 `<figure data-svg-src="xxx.svg">` 占位，SVG 存为独立 `.svg` 文件，由 `build_html.py` 注入；**不内嵌 SVG 代码** |
 | 验证面板 | 复制骨架中的 ⑩ 原样粘贴，不修改任何 `id` |
 | CSS / JS | **不要**在 `report-body.html` 中写 `<style>` 或 `<script>`，统一由 `build_html.py` 注入 |
 

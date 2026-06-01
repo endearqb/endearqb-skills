@@ -27,6 +27,9 @@ build/
 .idea/
 .vscode/
 
+# Agent skills
+.agents/
+
 # Local temp files
 tmp/
 temp/

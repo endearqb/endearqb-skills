@@ -467,5 +467,7 @@ class ReportInlineEditor {
   }
 }
 
-// 初始化编辑器
-const reportEditor = new ReportInlineEditor();
+// 初始化编辑器（仅当 build_html.py 传入 --editable 时，body 上有 data-editable 属性）
+if (document.body.dataset.editable === 'true') {
+  const reportEditor = new ReportInlineEditor();
+}

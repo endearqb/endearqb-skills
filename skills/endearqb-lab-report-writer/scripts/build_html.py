@@ -16,16 +16,16 @@ build_html.py - Lab Report HTML Assembler
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 用法 A（单文件，传统模式）：
-  python build_html.py --body   /outputs/XXXX报告名/report-body.html \
-                       --output /outputs/XXXX报告名/report.html \
+  python build_html.py --body   report-body.html \
+                       --output /mnt/user-data/outputs/report.html \
                        [--theme  dark] \
                        [--charts  charts-init.js] \
                        [--verify  verify-output.txt] \
                        [--svg-dir svgs/]
 
 用法 B（多分段，按文件名排序自动合并）：
-  python build_html.py --body-dir /outputs/XXXX报告名/body-parts/ \
-                       --output /outputs/XXXX报告名/report.html \
+  python build_html.py --body-dir ./body-parts/ \
+                       --output /mnt/user-data/outputs/report.html \
                        [--theme  olive] \
                        [--charts  charts-init.js] \
                        [--verify  verify-output.txt] \
@@ -45,7 +45,7 @@ build_html.py - Lab Report HTML Assembler
 
 用法 C（多分段，手动指定顺序）：
   python build_html.py --body-parts body-01.html body-02.html body-03.html \
-                       --output /outputs/XXXX报告名/report.html
+                       --output /mnt/user-data/outputs/report.html
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 主题参数 --theme：

@@ -510,7 +510,7 @@ figcaption {
   display: none; /* 默认隐藏，由媒体查询开启 */
   position: fixed;
   bottom: 24px;
-  left: 24px;
+  right: 24px;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -538,7 +538,7 @@ figcaption {
   display: none;
   position: fixed;
   bottom: 78px;
-  left: 16px;
+  right: 16px;
   width: min(280px, calc(100vw - 32px));
   background: var(--page);
   border: 1px solid var(--line);
@@ -689,7 +689,7 @@ figcaption {
   h1 { font-size: 20px; margin-bottom: 6px; }
   .abstract { margin: 14px 0 12px; }
   .verify-panel { bottom: 8px; right: 8px; }
-  .mobile-nav-btn { bottom: 8px; left: 8px; }
+  .mobile-nav-btn { bottom: 8px; right: 8px; }
 }
 
 /* 深色模式移动端适配 */

@@ -8,7 +8,8 @@
 
 当前仓库包含：
 
-- `endearqb-lab-report-writer`：用于实验/报告类内容撰写与校验的技能，附带参考资料与校验脚本。
+- `endearqb-lab-report-writer`：用于期刊风格实验报告与技术报告撰写的技能，支持分段 HTML 生成、数据质量校验、写作逻辑自检、主题切换与可复用报告资产。
+- `kimi-swarm-orchestrator`：通用多智能体编排框架，用于将复杂任务拆解为文档先行规划、隔离 Worker 目录、并行执行、错误恢复与有界精炼流程。
 - `endearqb-frontend-dataviz`：用于前端数据可视化工作的技能，包含图表示例、配色方案、图标等参考资料。
 - `endearqb-community-profiler`：用于群聊记录分析的技能，可生成成员画像、识别核心贡献者、评估社区健康度、总结聊天内容。
 - `endearqb-svg-flowchart`：用于根据文字步骤生成高质量 SVG 流程图的技能，支持垂直/水平布局、判断分支、多列分组流程图，以及可选的 HTML 预览页输出。
@@ -21,6 +22,7 @@
 ```text
 skills/
   endearqb-lab-report-writer/
+  kimi-swarm-orchestrator/
   endearqb-frontend-dataviz/
   endearqb-community-profiler/
   endearqb-svg-flowchart/

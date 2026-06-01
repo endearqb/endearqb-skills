@@ -243,3 +243,56 @@ SVG 内嵌到 HTML 后，可直接读取页面 `:root` 上的 CSS 变量。**所
 | 5–7步 | 垂直 | `560 × (N×80−4)` |
 | 8步以上 | 分组水平+垂直混合，或拆成多个子流程图 | — |
 | 含分支 | 带菱形判断节点 | 按内容手动测量 |
+
+---
+
+## ⚠ SVG `<text>` 内禁止嵌套 HTML 标签
+
+SVG `<text>` 元素内**严禁**嵌套任何 HTML 标签（如 `<strong>`、`<sub>`、`<em>`）。浏览器遇到这类标签会将其"提升"出 SVG，导致文字渲染在页面正文流而非图形内部。
+
+| 需求 | 错误写法 | 正确写法 |
+|------|---------|---------|
+| 粗体 | `<text><strong>步骤</strong></text>` | `<text font-weight="bold">步骤</text>` 或 `<tspan font-weight="bold">步骤</tspan>` |
+| 下标 | `<text>H<sub>2</sub>O</text>` | `<text>H<tspan baseline-shift="sub" font-size="0.75em">2</tspan>O</text>` |
+| 斜体/强调 | `<text><em>x</em></text>` | `<text font-style="italic">x</text>` 或 `<tspan font-style="italic">x</tspan>` |
+
+---
+
+## SVG 独立文件 + 注入机制
+
+SVG **不内嵌在正文 HTML 片段中**，而是单独保存为 `.svg` 文件，由 `build_html.py` 在拼装时自动注入。
+
+**① Claude 生成 SVG 文件**（如 `flowchart.svg`、`apparatus.svg`），保存在与正文同一目录：
+
+```
+body-parts/
+  body-04-methods.html     ← 只含占位符，不含 SVG 代码
+  flowchart.svg            ← 独立 SVG 文件
+  apparatus.svg            ← 若有多图，用不同文件名
+```
+
+**② 正文 HTML 片段用 `data-svg-src` 属性标记注入位置**：
+
+```html
+<section id="methods">
+  <h2 class="section-title">3. 实验装置与方法</h2>
+  <p>实验采用...</p>
+  <figure data-svg-src="flowchart.svg">
+    <figcaption>图 1. 实验流程图</figcaption>
+  </figure>
+  <figure data-svg-src="apparatus.svg">
+    <figcaption>图 2. 实验装置示意图</figcaption>
+  </figure>
+</section>
+```
+
+**③ `build_html.py` 自动完成注入**（默认在正文同目录查找）：
+
+```bash
+# SVG 与 body-parts/ 同目录，自动找到
+python scripts/build_html.py --body-dir body-parts/ --output report.html
+# SVG 在单独目录时用 --svg-dir 指定
+python scripts/build_html.py --body-dir body-parts/ --svg-dir svgs/ --output report.html
+```
+
+> ⚠️ SVG 文件不要包含 `<?xml ...?>` 声明行（脚本会自动去除）。若文件未找到，占位符原样保留并打印 `[WARN]`，不中断构建。

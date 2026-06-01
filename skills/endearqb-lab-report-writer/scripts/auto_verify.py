@@ -35,6 +35,17 @@ except ImportError:
 # 数据读取层
 # ==============================================================
 
+# 保留每列的原始字符串单元格（float 会丢失小数位/有效数字信息，
+# 数据规范自检需要原始文本才能判断精度一致性）
+RAW_STRINGS: dict = {}
+
+
+def _stash_raw(col: str, raw):
+    s = str(raw).strip()
+    if s and s.lower() not in ('nan', 'none', ''):
+        RAW_STRINGS.setdefault(col, []).append(s)
+
+
 def read_data(source: str) -> dict:
     """
     读取数据源，返回 {列名: [数值列表]} 字典。
@@ -67,9 +78,14 @@ def _read_with_pandas(path: Path) -> dict:
     
     result = {}
     for col in df.columns:
-        vals = pd.to_numeric(df[col], errors='coerce').dropna().tolist()
+        coerced = pd.to_numeric(df[col], errors='coerce')
+        vals = coerced.dropna().tolist()
         if vals:
             result[col] = vals
+            # 仅保留可转为数值的那些行的原始字符串
+            for raw, num in zip(df[col].tolist(), coerced.tolist()):
+                if pd.notna(num):
+                    _stash_raw(col, raw)
     return result
 
 
@@ -84,7 +100,9 @@ def _read_with_builtin_csv(path: Path) -> dict:
         for row in reader:
             for key, val in row.items():
                 try:
-                    result.setdefault(key, []).append(float(val))
+                    num = float(val)
+                    result.setdefault(key, []).append(num)
+                    _stash_raw(key, val)
                 except (ValueError, TypeError):
                     pass
     return result
@@ -117,7 +135,9 @@ def _parse_text_table(text: str) -> dict:
             if not h:
                 continue
             try:
-                result[h].append(float(cell.replace('%', '').replace(',', '')))
+                clean = cell.replace('%', '').replace(',', '')
+                result[h].append(float(clean))
+                _stash_raw(h, clean)
             except (ValueError, TypeError):
                 pass
     
@@ -150,8 +170,103 @@ def summarize(data: dict, mode: str) -> list[str]:
 
 
 # ==============================================================
-# 关键词→计算模式匹配
+# 数据规范自检（机械、客观；只提示不改数据）
 # ==============================================================
+#
+# 这一层只做能从数值表本身客观判定的检查，结果以 ⚠/✓ 标注，
+# 供撰写者参考。它**不修改**任何用户数据，也不替用户下结论。
+# 单位一致性、正文/图/表三处数据是否对得上、相关≠因果一类
+# 需要正文语境的判断，不在脚本内做，见 references/common-pitfalls.md。
+
+def _decimal_places(s: str) -> int:
+    """原始字符串小数点后位数；科学计数法/无小数点返回0。"""
+    s = s.strip().lower()
+    if 'e' in s:            # 科学计数法不参与小数位比较
+        return -1
+    if '.' in s:
+        return len(s.split('.', 1)[1])
+    return 0
+
+
+def _sig_figs(s: str) -> int:
+    """粗略有效数字位数估计（用于精度虚高提示）。"""
+    s = s.strip().lstrip('+-')
+    s = re.sub(r'[eE].*$', '', s)          # 去指数部分
+    if '.' in s:
+        digits = s.replace('.', '')
+        digits = digits.lstrip('0')         # 前导0不计
+        return len(digits) if digits else 1
+    else:
+        digits = s.rstrip('0')              # 整数尾随0视为不确定
+        digits = digits.lstrip('0')
+        return len(digits) if digits else 1
+
+
+def sanity_checks(data: dict, raw: dict) -> list[str]:
+    """返回【数据规范自检】文本块（list[str]）。"""
+    lines = ["【数据规范自检】"]
+    has_warning = False    # 是否出现 ⚠ 级问题（ℹ 信息项不计）
+
+    for col, vals in data.items():
+        n = len(vals)
+        col_msgs = []
+
+        # —— 1. 小数位/有效数字一致性 ——
+        raws = raw.get(col, [])
+        dps = [d for d in (_decimal_places(s) for s in raws) if d >= 0]
+        if len(set(dps)) > 1:
+            col_msgs.append(
+                f"⚠ 小数位不一致（{min(dps)}~{max(dps)} 位混用）——"
+                f"同一物理量各数据点的记录精度宜统一")
+        sfs = [_sig_figs(s) for s in raws]
+        if sfs and max(sfs) - min(sfs) >= 3:
+            col_msgs.append(
+                f"⚠ 有效数字跨度大（{min(sfs)}~{max(sfs)} 位）——"
+                f"请核对是否超出仪器实际分辨率（精度虚高）")
+
+        # —— 2. 样本量过小 ——
+        if 1 <= n < 3:
+            col_msgs.append(f"⚠ 样本量过小（n={n}）——标准差不可靠，结论宜谨慎，避免下普适判断")
+        elif 3 <= n < 5:
+            col_msgs.append(f"⚠ 样本量偏小（n={n}）——下普适/显著性结论前请确认 n 是否足够")
+
+        # —— 3. SD vs SEM 提示 ——
+        if n >= 2:
+            mean = statistics.mean(vals)
+            sd = statistics.stdev(vals)
+            sem = sd / math.sqrt(n)
+            col_msgs.append(
+                f"ℹ 误差棒区分：SD={sd:.4g}（数据离散度） vs "
+                f"SEM={sem:.4g}（均值精度）——请确认正文用对了哪一个")
+
+            # —— 4. 异常值标记（仅提示，绝不剔除）——
+            if n >= 4 and sd > 0:
+                outliers = [v for v in vals if abs(v - mean) > 3 * sd]
+                if outliers:
+                    ol = ", ".join(f"{v:.4g}" for v in outliers)
+                    col_msgs.append(
+                        f"⚠ 疑似异常值（>3σ）：{ol}——"
+                        f"如需剔除须在报告中说明依据，切勿静默删除")
+
+        # —— 5. 百分比合计 ——
+        looks_pct = bool(re.search(r'%|百分比|占比|比例|proportion|percent|share', col, re.IGNORECASE))
+        if (looks_pct or all(0 <= v <= 100 for v in vals)) and n >= 2:
+            total = sum(vals)
+            if looks_pct and not (99.0 <= total <= 101.0) and total > 1:
+                col_msgs.append(
+                    f"⚠ 百分比合计为 {total:.2f}%（≠100%）——"
+                    f"请确认分母/基数定义，或是否本就不应合计")
+
+        if col_msgs:
+            if any('⚠' in m for m in col_msgs):
+                has_warning = True
+            lines.append(f"  列: {col!r} (n={n})")
+            for m in col_msgs:
+                lines.append(f"    {m}")
+
+    if not has_warning:
+        lines.append("  ✓ 未发现小数位、样本量、异常值、百分比合计方面的明显问题")
+    return lines
 
 PATTERNS = [
     {
@@ -341,6 +456,11 @@ def main():
 
     # 5. 统计摘要
     for line in summarize(data, mode):
+        print(line)
+    print()
+
+    # 5b. 数据规范自检（机械、客观；只提示不改数据）
+    for line in sanity_checks(data, RAW_STRINGS):
         print(line)
     print()
 
