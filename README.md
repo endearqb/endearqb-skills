@@ -16,6 +16,20 @@ This repository currently includes:
 - `endearqb-wechat-file-organizer`: A skill for organizing WeChat file storage on Windows, with WeChat directory detection, duplicate-file analysis, recycle-bin deduplication, and month/type-based file organization.
 - `1nfinix-editorial-card-screenshot`: A skill for generating editorial-style HTML information cards and capturing them as ratio-specific PNG screenshots, with stable Chinese typography fallback and Chromium screenshot rendering.
 - `readme-first-builder`: A skill for initializing or upgrading a project to the README First architecture with `AGENTS.md`, root README guidance, `.ai/changes`, `.ai/decisions`, and key directory READMEs.
+- `anti-ai-slop-swarm`: A multi-agent de-slop pipeline that diagnoses text through six independent review lenses, merges and prioritizes findings, rewrites once from a unified issue list, and verifies against information loss or over-humanization.
+
+`anti-ai-slop-swarm` synthesizes and rewrites methods from the following open-source projects:
+
+- [blader/humanizer](https://github.com/blader/humanizer)
+- [op7418/Humanizer-zh](https://github.com/op7418/Humanizer-zh)
+- [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop)
+- [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)
+- [hylarucoder/ai-flavor-remover](https://github.com/hylarucoder/ai-flavor-remover)
+- [sptuan/shuo-ren-hua.rule](https://github.com/sptuan/shuo-ren-hua.rule)
+- [alchaincyf/nuwa-skill](https://github.com/alchaincyf/nuwa-skill)
+- [dongbeixiaohuo/writing-agent](https://github.com/dongbeixiaohuo/writing-agent)
+- [Hello-SimpleAI/chatgpt-comparison-detection](https://github.com/Hello-SimpleAI/chatgpt-comparison-detection)
+- [OUBIGFA/De-AI-Prompt-Enhancer-Writer-Booster-SKILL](https://github.com/OUBIGFA/De-AI-Prompt-Enhancer-Writer-Booster-SKILL)
 
 ## Repository Structure
 
@@ -29,6 +43,7 @@ skills/
   endearqb-wechat-file-organizer/
   1nfinix-editorial-card-screenshot/
   readme-first-builder/
+  anti-ai-slop-swarm/
 ```
 
 Each skill directory may contain:

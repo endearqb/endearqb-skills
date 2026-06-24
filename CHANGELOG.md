@@ -1,5 +1,11 @@
 ## Changelog
 
+### anti-ai-slop-swarm
+
+| 版本 | 日期 | 变更 |
+|------|------|------|
+| 1.1.0 | 2026-06-24 | **Added**: 新增多智能体去 AI 味流水线，支持六个独立审稿透镜并行诊断、Orchestrator 合并去重与排优先级、Rewriter 统一重写、Loss-Verifier 红队校验信息损失和过度去味；README 补充其综合并重写的开源项目方法来源说明。 |
+
 ### endearqb-community-profiler
 
 | 版本 | 日期 | 变更 |

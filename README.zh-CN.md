@@ -16,6 +16,20 @@
 - `endearqb-wechat-file-organizer`：用于整理 Windows 微信文件存储目录的技能，支持自动检测目录、重复文件分析、移入回收站去重，以及按月份和类型分类整理。
 - `1nfinix-editorial-card-screenshot`：用于生成编辑部风格的 HTML 信息卡，并按固定比例截图输出 PNG，已补齐中文字体 fallback 与 Chromium 稳定截图链路。
 - `readme-first-builder`：用于在项目中初始化或升级 README First 完整架构，包括 `AGENTS.md`、根 README、`.ai/changes`、`.ai/decisions` 与关键目录 README。
+- `anti-ai-slop-swarm`：多智能体去 AI 味流水线，通过六个独立审稿透镜并行诊断文本，合并去重并排优先级后统一重写，再用红队校验信息损失与过度去味风险。
+
+`anti-ai-slop-swarm` 技能综合并重写了以下开源项目中的方法：
+
+- [blader/humanizer](https://github.com/blader/humanizer)
+- [op7418/Humanizer-zh](https://github.com/op7418/Humanizer-zh)
+- [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop)
+- [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)
+- [hylarucoder/ai-flavor-remover](https://github.com/hylarucoder/ai-flavor-remover)
+- [sptuan/shuo-ren-hua.rule](https://github.com/sptuan/shuo-ren-hua.rule)
+- [alchaincyf/nuwa-skill](https://github.com/alchaincyf/nuwa-skill)
+- [dongbeixiaohuo/writing-agent](https://github.com/dongbeixiaohuo/writing-agent)
+- [Hello-SimpleAI/chatgpt-comparison-detection](https://github.com/Hello-SimpleAI/chatgpt-comparison-detection)
+- [OUBIGFA/De-AI-Prompt-Enhancer-Writer-Booster-SKILL](https://github.com/OUBIGFA/De-AI-Prompt-Enhancer-Writer-Booster-SKILL)
 
 ## 目录结构
 
@@ -29,6 +43,7 @@ skills/
   endearqb-wechat-file-organizer/
   1nfinix-editorial-card-screenshot/
   readme-first-builder/
+  anti-ai-slop-swarm/
 ```
 
 每个 skill 目录通常包含：
