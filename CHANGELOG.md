@@ -4,6 +4,7 @@
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
+| 1.2.0 | 2026-09-03 | **Updated**: Cards 流程新增全覆盖下置象形图，SVG 源文件可渲染为透明 PNG 嵌入 PPTX；新增结构、资产存在性与配图完整性 lint 和单元测试；manifest 的 `source_spec` 改为相对路径，避免泄露本机绝对目录。 |
 | 1.1.0 | 2026-09-03 | **Added**: 新增面向产品展示、产品发布、解决方案路演与 Demo Day 的叙事型 PPTX Skill；支持 Big Idea、三幕结构、逐页 energy/mood、10 种 bleed 模式、14 种页面 type、可编辑 UI mockup、SWD 风格图表、原生流程/架构图、主题篇幅预算、source-backed 多轮迭代与版本 lineage；附带 lint/build/render/inspect 工具链、单元测试、evals 和 13 页可运行示例。 |
 
 ### anti-ai-slop-swarm

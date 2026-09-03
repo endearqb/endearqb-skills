@@ -387,6 +387,20 @@ def _lint_flow(i: int, s: dict, limits: dict, spec: dict, spec_dir: str, rep: Re
             rep.fail("L08", i, f"flow label {m}{unit} > {limit}{unit}：「{st['label']}」")
         if "\n" in str(st.get("desc") or "") or "\r" in str(st.get("desc") or ""):
             rep.fail("L08", i, f"flow desc 必须保持单行：「{st.get('desc')}」")
+    icons = [st.get("icon") for st in steps if isinstance(st, dict) and st.get("icon")]
+    if icons:
+        if len(icons) != n:
+            rep.fail("L08", i, "flow 象形图必须覆盖每个步骤，不能只给部分卡片配图")
+        if s.get("direction") != "horizontal" or s.get("style") != "cards":
+            rep.fail("L08", i, "flow 象形图只支持 direction=horizontal + style=cards")
+        for st in steps:
+            if not isinstance(st, dict) or not st.get("icon"):
+                continue
+            if st.get("desc"):
+                rep.fail("L08", i, f"带象形图的 flow 步骤不再放 desc：「{st.get('label')}」")
+            path = os.path.join(spec_dir, spec["deck"].get("assets_dir", "./assets"), st["icon"])
+            if not os.path.isfile(path):
+                rep.fail("L10", i, f"flow 象形图不存在: {path}")
     if s.get("direction") not in (None, "horizontal", "vertical"):
         rep.fail("L00", i, f"flow.direction 非法: {s.get('direction')!r}")
     if s.get("style") not in (None, "cards", "chevron", "layers"):

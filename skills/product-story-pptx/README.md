@@ -8,7 +8,7 @@
 
 ## 已完成状态
 
-1.1 包含：
+1.2 包含：
 
 - Agent Skills 兼容的 `SKILL.md`。
 - Codex/ChatGPT 的 `agents/openai.yaml`。
@@ -20,6 +20,7 @@
 - 主题篇幅预算、上下半屏 bleed 与条目专属配图版式。
 - Storytelling with Data 风格图表生成器。
 - 4 种原生形状流程/架构图。
+- Cards 流程支持全覆盖、下置式象形图，并校验结构与资产完整性。
 - Spec lint、PPTX inspect、PDF/PNG/contact-sheet 渲染。
 - 13 页可运行示例 deck 与合成示例素材。
 - 单元测试和全链路 smoke test。

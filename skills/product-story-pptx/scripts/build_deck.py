@@ -582,7 +582,13 @@ def build_flow(ctx: Ctx, slide, sl: dict, lay: dict, col: dict, slide_no: int) -
             pic = add_image_cover(ctx, slide, (media_x, yy, media_w, image_h), name, "center", slide_no)
             if pic is not None:
                 pic.name = f"PST_FLOW_IMAGE_{idx + 1}"
-    draw_flow(slide, flow_rect, sl["steps"], pal, ctx.fonts, ctx.sizes, ctx.reg["flow"],
+    steps = []
+    for step in sl["steps"]:
+        item = dict(step)
+        if item.get("icon"):
+            item["icon"] = ctx.asset(item["icon"])
+        steps.append(item)
+    draw_flow(slide, flow_rect, steps, pal, ctx.fonts, ctx.sizes, ctx.reg["flow"],
               direction=sl.get("direction", "horizontal"), style=sl.get("style", "cards"))
 
 

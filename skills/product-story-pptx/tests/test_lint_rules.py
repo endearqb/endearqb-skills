@@ -58,6 +58,15 @@ class LintRulesTest(unittest.TestCase):
         report = self.report(spec)
         self.assertTrue(any(x["rule"] == "L08" and "vertical" in x["msg"] for x in report.fails))
 
+    def test_flow_icons_must_cover_every_card(self):
+        spec = copy.deepcopy(self.base)
+        flow = next(slide for slide in spec["slides"] if slide["type"] == "flow")
+        flow["direction"] = "horizontal"
+        flow["style"] = "cards"
+        flow["steps"][0]["icon"] = "placeholder.png"
+        report = self.report(spec)
+        self.assertTrue(any(x["rule"] == "L08" and "每个步骤" in x["msg"] for x in report.fails))
+
     def test_forbidden_chart_kind_fails(self):
         spec = copy.deepcopy(self.base)
         chart = next(slide for slide in spec["slides"] if slide["type"] == "chart")

@@ -173,12 +173,15 @@ def main(argv: list[str] | None = None) -> int:
         manifest_path = pptx.with_suffix(".manifest.json")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
         lineage = manifest.get("lineage") or {}
+        source_spec = manifest.get("source_spec") or ""
         manifest_ok = (
             len(manifest.get("slides") or []) == expected_slides
             and lineage.get("mode") == "initial"
             and lineage.get("version") == "v1.1-example"
             and len(manifest.get("topic_budgets") or []) == 1
             and sum(1 for slide in manifest.get("slides") or [] if slide.get("ui_mockup")) == 2
+            and not os.path.isabs(source_spec)
+            and source_spec == example.name
         )
         report["checks"].append({"name": "manifest_lineage", "passed": manifest_ok})
         failed |= not manifest_ok

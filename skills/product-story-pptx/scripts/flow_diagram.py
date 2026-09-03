@@ -249,7 +249,23 @@ def _cards(slide: Any, rect: Rect, steps: Sequence[Mapping[str, Any]], pal: Mapp
             name=f"PST_FLOW_LABEL_{index}",
         )
         desc = step.get("desc")
-        if desc:
+        icon = step.get("icon")
+        if icon:
+            # Keep the label as a single, scannable line and use the lower third
+            # for a quiet semantic pictogram.  The picture is a transparent PNG
+            # rendered from the versioned SVG source for PowerPoint portability.
+            icon_size = min(0.68, node_w * 0.54, node_h * 0.30)
+            icon_x = cursor_x + (node_w - icon_size) / 2
+            icon_y = top + node_h - icon_size - 0.24
+            picture = slide.shapes.add_picture(
+                str(icon),
+                Inches(icon_x),
+                Inches(icon_y),
+                Inches(icon_size),
+                Inches(icon_size),
+            )
+            picture.name = f"PST_FLOW_ICON_{index}"
+        elif desc:
             _text(
                 slide,
                 (cursor_x + inner_pad, label_y + 0.62, inner_w, max(0.45, node_h - (label_y - top) - 0.72)),

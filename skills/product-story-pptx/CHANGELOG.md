@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 — 2026-09-03
+
+- Cards 流程支持每步一个下置象形图，用卡片下半部增强扫读，不与 desc 并存。
+- 新增图标全覆盖、结构限制与资产存在性 lint；缺图、部分配图或非 horizontal/cards 使用会失败。
+- SVG 作为可维护源文件，PPTX 嵌入透明 PNG 兼容渲染，降低 PowerPoint/LibreOffice 渲染差异。
+- 单元测试与流程图审美规范同步升级。
+- Manifest 的 `source_spec` 改为相对路径，避免公开产物泄露本机用户名与绝对目录。
+
 ## 1.1.0 — 2026-09-03
 
 - 支持具备 spec、脚本与 manifest 的 source project 多轮迭代，新增 lineage、父 manifest 哈希与回归页规则。

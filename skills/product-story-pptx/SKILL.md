@@ -3,7 +3,7 @@ name: product-story-pptx
 description: 创建并迭代产品展示、产品介绍、产品发布、功能演示、解决方案路演与 Demo Day 类图文 PPTX。当用户要求有情绪起伏的叙事、full/half/edge bleed 图片版式、可编辑 UI mockup、有审美的流程图或架构图、遵循 Storytelling with Data 的图表、避免模板味或 AI 味时使用。覆盖 brief、Big Idea、三幕故事、主题篇幅预算、逐页 energy/mood、deck spec、版本 lineage、机器 lint、python-pptx 生成、渲染巡检与结构 QA。可从零创建，也可继续维护具备 spec、脚本、manifest 等源文件的同构项目；只有任意既有 PPTX 或客户模板而无可重建源文件时，请改用通用 PPTX 编辑技能。
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # product-story-pptx
