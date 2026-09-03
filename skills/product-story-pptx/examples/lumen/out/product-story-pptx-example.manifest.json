@@ -1,0 +1,256 @@
+{
+  "deck": "Lumen 产品介绍（示例 deck）",
+  "big_idea": "Lumen 让分散在不同系统里的团队知识，在可追溯的前提下三秒内被找到。",
+  "audience": "需要降低信息搜索成本的产品、研发与运营负责人",
+  "desired_action": "批准一个 50 人、8 周的受控试点",
+  "theme": "ink",
+  "slides": [
+    {
+      "no": 1,
+      "type": "cover",
+      "bleed": "full",
+      "energy": 4,
+      "mood": "期待",
+      "title": "让团队的知识，三秒内被找到",
+      "image": "hero-workspace.jpg",
+      "scrim": "gradient",
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 2,
+      "type": "statement",
+      "bleed": "none",
+      "energy": 2,
+      "mood": "焦虑",
+      "title": "知识没有丢，只是没人找得到",
+      "image": null,
+      "scrim": null,
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 3,
+      "type": "chart",
+      "bleed": "none",
+      "energy": 2,
+      "mood": "沉重",
+      "title": "员工每周花 5.2 小时找信息（示例数据）",
+      "image": null,
+      "scrim": null,
+      "is_example": true,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 4,
+      "type": "section",
+      "bleed": "color-block",
+      "energy": 3,
+      "mood": "转折",
+      "title": "换一种找法",
+      "image": null,
+      "scrim": null,
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 5,
+      "type": "feature_hero",
+      "bleed": "half",
+      "energy": 4,
+      "mood": "眼前一亮",
+      "title": "一句话提问，直接得到出处可查的答案",
+      "image": null,
+      "scrim": null,
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": true
+    },
+    {
+      "no": 6,
+      "type": "flow",
+      "bleed": "none",
+      "energy": 3,
+      "mood": "踏实",
+      "title": "三步接入，不改变现有工作流",
+      "image": null,
+      "scrim": null,
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 7,
+      "type": "feature_hero",
+      "bleed": "half-top",
+      "energy": 4,
+      "mood": "信任",
+      "title": "答案带来源，可信才敢用",
+      "image": null,
+      "scrim": null,
+      "is_example": false,
+      "topics": [
+        "proof"
+      ],
+      "ui_mockup": true
+    },
+    {
+      "no": 8,
+      "type": "media_bars",
+      "bleed": "none",
+      "energy": 3,
+      "mood": "清晰",
+      "title": "每条结论都配一张可核验的证据图",
+      "image": null,
+      "scrim": null,
+      "is_example": false,
+      "topics": [
+        "proof"
+      ],
+      "ui_mockup": false
+    },
+    {
+      "no": 9,
+      "type": "chart",
+      "bleed": "none",
+      "energy": 3,
+      "mood": "被说服",
+      "title": "上线 8 周后，重复提问下降 62%（示例数据）",
+      "image": null,
+      "scrim": null,
+      "is_example": true,
+      "topics": [
+        "proof"
+      ],
+      "ui_mockup": false
+    },
+    {
+      "no": 10,
+      "type": "big_number",
+      "bleed": "none",
+      "energy": 4,
+      "mood": "惊讶",
+      "title": "找到答案的速度是原来的 3.4 倍（示例数据）",
+      "image": null,
+      "scrim": null,
+      "is_example": true,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 11,
+      "type": "quote",
+      "bleed": "half-bottom",
+      "energy": 3,
+      "mood": "共鸣",
+      "title": "新人上手周期缩短（示例引言）",
+      "image": "closing-team.jpg",
+      "scrim": null,
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 12,
+      "type": "compare",
+      "bleed": "none",
+      "energy": 2,
+      "mood": "对照",
+      "title": "同样的问题，两种结果",
+      "image": null,
+      "scrim": null,
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": false
+    },
+    {
+      "no": 13,
+      "type": "closing",
+      "bleed": "full",
+      "energy": 5,
+      "mood": "行动",
+      "title": "让知识从今天起可达",
+      "image": "closing-team.jpg",
+      "scrim": "dark",
+      "is_example": false,
+      "topics": [],
+      "ui_mockup": false
+    }
+  ],
+  "energy_sequence": [
+    4,
+    2,
+    2,
+    3,
+    4,
+    3,
+    4,
+    3,
+    3,
+    4,
+    3,
+    2,
+    5
+  ],
+  "bleed_sequence": [
+    "full",
+    "none",
+    "none",
+    "color-block",
+    "half",
+    "none",
+    "half-top",
+    "none",
+    "none",
+    "none",
+    "half-bottom",
+    "none",
+    "full"
+  ],
+  "example_data_slides": [
+    3,
+    9,
+    10
+  ],
+  "warnings": [],
+  "fonts": {
+    "font_latin": "Inter",
+    "font_cjk": "Noto Sans CJK SC"
+  },
+  "lineage": {
+    "mode": "initial",
+    "version": "v1.1-example",
+    "change_summary": "演示主题预算、可编辑 UI mockup、上下半屏 bleed 与条目配图",
+    "regression_pages": [
+      5,
+      7,
+      8,
+      11
+    ],
+    "affected_components": [
+      "ui_mockup",
+      "half_bleed",
+      "media_bars",
+      "topic_budget"
+    ]
+  },
+  "source_spec": "../spec.yaml",
+  "source_spec_sha256": "ca1a11a2e0d1169e6aefea548188def3cfad15fc262d7f79ebeda474a0d45d99",
+  "regression_pages": [
+    5,
+    7,
+    8,
+    11
+  ],
+  "topic_budgets": [
+    {
+      "topic": "proof",
+      "min_share": 0.2,
+      "max_share": 0.35
+    }
+  ]
+}

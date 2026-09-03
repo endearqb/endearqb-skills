@@ -1,0 +1,302 @@
+# =====================================================================
+# product-story-pptx · deck spec 模板
+# ---------------------------------------------------------------------
+# 用法：复制为 spec.yaml → 修改 → python scripts/lint_deck.py spec.yaml
+#
+# 顶层只有 deck（全局）与 slides（页面列表）；篇幅预算放在 deck.topic_budgets。
+#
+# deck:
+#   title        必填  文件属性中的标题（不是首页大标题）
+#   big_idea     必填  一句完整主张：独特观点 + 对受众的利害关系
+#   audience     必填  目标受众及其决策角色
+#   desired_action 必填  观众看完后要采取的具体行动
+#   theme        必填  ink | paper | signal        见 assets/design-tokens.yaml
+#   language     选填  zh | en                      默认 zh；影响标题长度规则的计法
+#   assets_dir   选填  图片所在目录，相对 spec 文件  默认 ./assets
+#   lineage      选填  initial/iteration 版本谱系；iteration 必须提供 parent_manifest
+#   brand        选填  覆盖主题里的颜色/字体
+#     accent       强调色  "#RRGGBB"
+#     color_block  色块页背景  "#RRGGBB"
+#     font_latin   西文字体名
+#     font_cjk     中日韩字体名
+#   footer       选填
+#     label        页脚左侧文字（产品名 / 场合）
+#     page_numbers true | false                   默认 true
+#
+# deck.topic_budgets[]:
+#   topic        主题标识；通过 slides[].topics 计数
+#   min_share    选填  最小页数占比，0–1
+#   max_share    选填  最大页数占比，0–1
+#
+# slides[]:
+#   type    必填  cover | section | statement | quote | feature_hero | split |
+#                 bullets | compare | flow | chart | big_number | gallery |
+#                 media_bars | closing
+#   bleed   选填  none | full | partial-left | partial-right | half | half-top |
+#                 half-bottom | edge |
+#                 overlay | color-block            默认 none
+#                 type↔bleed 兼容表见 assets/layout-registry.yaml
+#   energy  必填  1–5 整数，情绪强度（见 references/narrative-arc.md）
+#   mood    必填  一两个词，给人读的情绪标签，例如「焦虑」「松一口气」「兴奋」
+#   title   必填  action title：一句结论，中文 ≤ 24 字 / 英文 ≤ 14 词
+#   label   选填  标题上方的小字 kicker（章节名 / 功能名）
+#   body    选填  一段正文，≤ 60 字
+#   bullets 选填  ≤ 4 条，每条 ≤ 20 字
+#   image   选填  文件名，相对 assets_dir；full / overlay / half / partial-* / edge 必填
+#   image_focus 选填  center | top | bottom | left | right   裁切锚点，默认 center
+#   scrim   选填  none | dark | light | gradient   full / overlay 必填且不能为 none
+#   notes   选填  演讲者备注（写进 pptx notes）
+#   topics  选填  主题标识列表，用于 topic_budgets 篇幅核算
+#
+#   type 专用字段：
+#   quote:       quote（引言正文）、attribution（署名）
+#   feature_hero / split: body 或 bullets 二选一
+#   compare:     left: {title, bullets}  right: {title, bullets}
+#   flow:        steps: [{label, desc, highlight}]  3–7 个，恰好一个 highlight
+#                direction: horizontal | vertical    默认 horizontal
+#                style: cards | chevron | layers      默认 cards
+#   chart:       chart:
+#                  kind: bar | hbar | line | slope | dot
+#                  data:
+#                    categories: [...]                 x 轴 / 类别
+#                    series: [{name, values: [...]}]   一到多个序列
+#                  highlight: [...]                    bar/hbar/dot 填 category 名；line/slope 填 series 名；≤ 2
+#                  unit: "小时" | "%" | ...             附在直接标注后
+#                  annotation: "..."                   图内一句话注释（选填）
+#                  source: "..."                       必填
+#                  is_example: true | false            示例数据必须为 true，且 title 或 source 含「示例」
+#   big_number:  number: "3.4x"   caption: "..."   source: "..."  is_example
+#   gallery:     images: [...]  2–4 张，等宽排列
+#   feature_hero / split 可用 ui_mockup 替代 image，生成可编辑原生形状界面示意
+#   media_bars:  bar_width_ratio: 0.45–0.72；media_side: alternating | aligned
+#                items: [{label, desc, image, image_focus, highlight}]，3–5 条
+# =====================================================================
+
+deck:
+  title: "Lumen 产品介绍（示例 deck）"
+  big_idea: "Lumen 让分散在不同系统里的团队知识，在可追溯的前提下三秒内被找到。"
+  audience: "需要降低信息搜索成本的产品、研发与运营负责人"
+  desired_action: "批准一个 50 人、8 周的受控试点"
+  theme: ink
+  language: zh
+  assets_dir: ./assets
+  lineage:
+    mode: initial
+    version: v1.1-example
+    change_summary: "演示主题预算、可编辑 UI mockup、上下半屏 bleed 与条目配图"
+    regression_pages: [5, 7, 8, 11]
+    affected_components: [ui_mockup, half_bleed, media_bars, topic_budget]
+  brand:
+    accent: "#FF5A36"
+  footer:
+    label: "Lumen · 示例"
+    page_numbers: true
+  topic_budgets:
+    - topic: proof
+      min_share: 0.20
+      max_share: 0.35
+
+slides:
+  # ---- 第一幕：现状与裂缝 ---------------------------------------------
+  - type: cover
+    bleed: full
+    energy: 4
+    mood: 期待
+    label: "Lumen"
+    title: "让团队的知识，三秒内被找到"
+    body: "产品介绍 · 2026"
+    image: hero-workspace.jpg          # ≥ 1920 px 宽；示例文件名，需替换
+    image_focus: center
+    scrim: gradient
+    notes: "开场只说一句话。停两秒再翻页。"
+
+  - type: statement
+    bleed: none
+    energy: 2
+    mood: 焦虑
+    title: "知识没有丢，只是没人找得到"
+    body: "文档在飞书、代码在 GitHub、决定在群聊里。每个人都在重新找一遍别人已经找到的东西。"
+    notes: "这是第一个低谷。语速放慢。"
+
+  - type: chart
+    bleed: none
+    energy: 2
+    mood: 沉重
+    label: "现状"
+    title: "员工每周花 5.2 小时找信息（示例数据）"
+    chart:
+      kind: hbar
+      data:
+        categories: ["找文档", "问同事", "翻聊天记录", "重做一遍"]
+        series:
+          - name: "每周小时数"
+            values: [2.1, 1.4, 1.1, 0.6]
+      highlight: ["找文档"]
+      unit: "h"
+      annotation: "四成时间花在“找文档”"
+      source: "示例数据，仅用于版式演示；交付前替换为真实调研"
+      is_example: true
+
+  # ---- 第二幕：转折与方案 ---------------------------------------------
+  - type: section
+    bleed: color-block
+    energy: 3
+    mood: 转折
+    label: "02"
+    title: "换一种找法"
+    notes: "章节页停留 1 秒即可。"
+
+  - type: feature_hero
+    bleed: half
+    energy: 4
+    mood: 眼前一亮
+    label: "自然语言问答"
+    title: "一句话提问，直接得到出处可查的答案"
+    bullets:
+      - "跨文档、代码、群聊统一检索"
+      - "答案附原文位置，一键跳转"
+      - "权限沿用原系统，不额外配置"
+    ui_mockup:
+      title: "Lumen 知识助手"
+      theme: light
+      badge: "界面示意"
+      sidebar: ["问答", "知识库", "数据源"]
+      headline: "权限内的知识，一问即达"
+      subhead: "回答附原文位置与更新时间"
+      kpis:
+        - {label: "已接入数据源", value: "12"}
+        - {label: "平均响应", value: "3.2s", highlight: true}
+        - {label: "引用覆盖", value: "96%"}
+      items:
+        - {label: "研发规范", value: "已引用 4 处", highlight: true}
+        - {label: "产品决策", value: "更新于今天"}
+        - {label: "客户反馈", value: "权限可见"}
+
+  - type: flow
+    bleed: none
+    energy: 3
+    mood: 踏实
+    label: "接入方式"
+    title: "三步接入，不改变现有工作流"
+    direction: horizontal
+    style: cards
+    steps:
+      - label: "授权数据源"
+        desc: "飞书 / GitHub / Slack"
+      - label: "自动建索引"
+        desc: "首轮 30 分钟"
+        highlight: true
+      - label: "原处提问"
+        desc: "无需切换窗口"
+
+  - type: feature_hero
+    bleed: half-top
+    energy: 4
+    mood: 信任
+    label: "可追溯"
+    title: "答案带来源，可信才敢用"
+    body: "每条回答都能展开到原始段落、作者和时间。不确定的问题，Lumen 会直接说不知道。"
+    ui_mockup:
+      title: "Lumen 来源追溯"
+      theme: dark
+      badge: "界面示意"
+      headline: "回答与原文同屏核验"
+      subhead: "保留作者、时间与权限边界"
+      kpis:
+        - {label: "引用段落", value: "4"}
+        - {label: "最新更新", value: "今天", highlight: true}
+      items:
+        - {label: "产品决策记录", value: "已定位", highlight: true}
+        - {label: "研发规范", value: "版本 2.4"}
+    topics: [proof]
+
+  - type: media_bars
+    bleed: none
+    energy: 3
+    mood: 清晰
+    label: "证据锚点"
+    title: "每条结论都配一张可核验的证据图"
+    bar_width_ratio: 0.60
+    media_side: alternating
+    items:
+      - label: "原文定位"
+        desc: "展开到段落、作者和时间"
+        image: feature-source.png
+        image_focus: center
+        highlight: true
+      - label: "问题上下文"
+        desc: "保留问题与权限边界"
+        image: feature-ask.png
+        image_focus: left
+      - label: "团队采用"
+        desc: "用真实使用场景复核结果"
+        image: team-quote.jpg
+        image_focus: center
+    topics: [proof]
+
+  # ---- 第三幕：证明与召唤 ---------------------------------------------
+  - type: chart
+    bleed: none
+    energy: 3
+    mood: 被说服
+    label: "试点结果"
+    title: "上线 8 周后，重复提问下降 62%（示例数据）"
+    chart:
+      kind: line
+      data:
+        categories: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+        series:
+          - name: "重复提问 / 周"
+            values: [100, 94, 81, 70, 62, 51, 44, 38]
+          - name: "总提问 / 周"
+            values: [100, 103, 108, 110, 112, 115, 114, 116]
+      highlight: ["重复提问 / 周"]
+      unit: ""
+      annotation: "以 W1 为 100 归一化"
+      source: "示例数据，仅用于版式演示"
+      is_example: true
+    topics: [proof]
+
+  - type: big_number
+    bleed: none
+    energy: 4
+    mood: 惊讶
+    label: "效率"
+    number: "3.4x"
+    title: "找到答案的速度是原来的 3.4 倍（示例数据）"
+    caption: "中位数从 11 分钟降到 3 分 15 秒"
+    source: "示例数据，仅用于版式演示"
+    is_example: true
+
+  - type: quote
+    bleed: half-bottom
+    energy: 3
+    mood: 共鸣
+    quote: "新人第一周就能自己找到答案，不再反复问老员工。"
+    attribution: "示例引言 · 交付前替换为真实客户原话"
+    title: "新人上手周期缩短（示例引言）"
+    image: closing-team.jpg
+    image_focus: right
+
+  - type: compare
+    bleed: none
+    energy: 2
+    mood: 对照
+    title: "同样的问题，两种结果"
+    left:
+      title: "过去"
+      bullets: ["群里问，等回复", "翻 5 个系统", "找到的是旧版本"]
+    right:
+      title: "现在"
+      bullets: ["一句话提问", "3 秒得到答案", "自动指向最新版"]
+
+  - type: closing
+    bleed: full
+    energy: 5
+    mood: 行动
+    title: "让知识从今天起可达"
+    body: "申请 50 人试点"
+    image: closing-team.jpg
+    image_focus: center
+    scrim: dark
+    notes: "结尾停在高点。不要放「谢谢」页。"

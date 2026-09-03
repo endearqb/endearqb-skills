@@ -17,6 +17,7 @@ This repository currently includes:
 - `1nfinix-editorial-card-screenshot`: A skill for generating editorial-style HTML information cards and capturing them as ratio-specific PNG screenshots, with stable Chinese typography fallback and Chromium screenshot rendering.
 - `readme-first-builder`: A skill for initializing or upgrading a project to the README First architecture with `AGENTS.md`, root README guidance, `.ai/changes`, `.ai/decisions`, and key directory READMEs.
 - `anti-ai-slop-swarm`: A multi-agent de-slop pipeline that diagnoses text through six independent review lenses, merges and prioritizes findings, rewrites once from a unified issue list, and verifies against information loss or over-humanization.
+- `product-story-pptx`: A source-backed product-deck skill that turns a brief into a narrative PPTX with a three-act emotional arc, image-led bleed layouts, editable UI mockups, focused data storytelling, version lineage, and executable lint/render/inspect QA.
 
 `anti-ai-slop-swarm` synthesizes and rewrites methods from the following open-source projects:
 
@@ -44,13 +45,16 @@ skills/
   1nfinix-editorial-card-screenshot/
   readme-first-builder/
   anti-ai-slop-swarm/
+  product-story-pptx/
 ```
 
 Each skill directory may contain:
 
 - `SKILL.md`: skill instructions
+- `agents/`: UI metadata and invocation policy
 - `references/`: supporting reference materials
 - `scripts/`: helper scripts when needed
+- `assets/`, `examples/`, `tests/`, and `evals/`: reusable resources and validation fixtures when needed
 
 ## Usage
 

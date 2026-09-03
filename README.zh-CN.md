@@ -17,6 +17,7 @@
 - `1nfinix-editorial-card-screenshot`：用于生成编辑部风格的 HTML 信息卡，并按固定比例截图输出 PNG，已补齐中文字体 fallback 与 Chromium 稳定截图链路。
 - `readme-first-builder`：用于在项目中初始化或升级 README First 完整架构，包括 `AGENTS.md`、根 README、`.ai/changes`、`.ai/decisions` 与关键目录 README。
 - `anti-ai-slop-swarm`：多智能体去 AI 味流水线，通过六个独立审稿透镜并行诊断文本，合并去重并排优先级后统一重写，再用红队校验信息损失与过度去味风险。
+- `product-story-pptx`：面向产品展示、产品发布、解决方案路演与 Demo Day 的可复现 PPTX 技能，支持三幕叙事与情绪曲线、图片主导的 bleed 版式、可编辑 UI mockup、聚焦式数据表达、版本 lineage，以及可执行的 lint、渲染与结构 QA。
 
 `anti-ai-slop-swarm` 技能综合并重写了以下开源项目中的方法：
 
@@ -44,13 +45,16 @@ skills/
   1nfinix-editorial-card-screenshot/
   readme-first-builder/
   anti-ai-slop-swarm/
+  product-story-pptx/
 ```
 
 每个 skill 目录通常包含：
 
 - `SKILL.md`：技能说明
+- `agents/`：界面元数据与调用策略
 - `references/`：参考资料
 - `scripts/`：辅助脚本
+- `assets/`、`examples/`、`tests/`、`evals/`：按需提供的复用资源、示例与验证夹具
 
 ## 使用方式
 

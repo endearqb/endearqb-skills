@@ -1,5 +1,11 @@
 ## Changelog
 
+### product-story-pptx
+
+| 版本 | 日期 | 变更 |
+|------|------|------|
+| 1.1.0 | 2026-09-03 | **Added**: 新增面向产品展示、产品发布、解决方案路演与 Demo Day 的叙事型 PPTX Skill；支持 Big Idea、三幕结构、逐页 energy/mood、10 种 bleed 模式、14 种页面 type、可编辑 UI mockup、SWD 风格图表、原生流程/架构图、主题篇幅预算、source-backed 多轮迭代与版本 lineage；附带 lint/build/render/inspect 工具链、单元测试、evals 和 13 页可运行示例。 |
+
 ### anti-ai-slop-swarm
 
 | 版本 | 日期 | 变更 |

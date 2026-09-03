@@ -1,0 +1,144 @@
+# =====================================================================
+# product-story-pptx · design tokens
+# 颜色一律 "#RRGGBB"。字号单位 pt。
+# =====================================================================
+
+typography:
+  font_latin: "Inter"                 # 未安装时回退 fallback_latin
+  font_cjk: "Noto Sans CJK SC"        # 未安装时回退 fallback_cjk
+  fallback_latin: "Arial"
+  fallback_cjk: "Microsoft YaHei"
+  line_spacing: 1.15
+
+  sizes:
+    cover_title: 54
+    section_title: 44
+    statement: 40
+    title: 32
+    subtitle: 20
+    body: 18
+    bullet: 18
+    quote: 30
+    attribution: 14
+    caption: 13
+    label: 12                          # kicker / eyebrow，全大写或加字距
+    big_number: 132
+    big_number_caption: 20
+    flow_label: 16
+    flow_desc: 12
+    flow_badge: 12
+    compare_head: 22
+    footer: 10
+
+  # 自动缩字的下限；到底还放不下 → build 报 WARN，应该删字
+  min_sizes:
+    cover_title: 40
+    section_title: 34
+    statement: 28
+    title: 24
+    body: 14
+    bullet: 14
+    quote: 22
+
+# ---------------------------------------------------------------------
+# 主题
+#   background / surface   页面底色 / 卡片底色
+#   text / text_muted      主文字 / 次级文字
+#   accent / accent_soft   唯一强调色 / 它的浅版（图表次高亮、hover 感）
+#   neutral_data           图表里"其他"数据的灰
+#   rule                   细线、基线
+#   color_block / color_block_text   色块页背景与其上的文字
+#   scrim_dark / scrim_light         压图时的暗/亮遮罩基色
+#   text_on_dark_scrim / text_on_light_scrim
+# ---------------------------------------------------------------------
+themes:
+
+  ink:                                   # 深底。发布会、科技产品、有大图
+    background: "#0E0F12"
+    surface: "#181A20"
+    text: "#F4F3EF"
+    text_muted: "#9DA1AB"
+    accent: "#FF5A36"
+    accent_soft: "#FFB59F"
+    neutral_data: "#5C616C"
+    rule: "#2B2F38"
+    color_block: "#FF5A36"
+    color_block_text: "#0E0F12"
+    scrim_dark: "#05060A"
+    scrim_light: "#FFFFFF"
+    text_on_dark_scrim: "#FFFFFF"
+    text_on_light_scrim: "#0E0F12"
+
+  paper:                                 # 米白纸感。品牌故事、消费产品、编辑风
+    background: "#F6F3EC"
+    surface: "#FFFFFF"
+    text: "#1B1B1B"
+    text_muted: "#6F6A62"
+    accent: "#1F4FD8"
+    accent_soft: "#B9C7F4"
+    neutral_data: "#C4BFB5"
+    rule: "#E2DDD3"
+    color_block: "#1F4FD8"
+    color_block_text: "#FFFFFF"
+    scrim_dark: "#0B0B0B"
+    scrim_light: "#F6F3EC"
+    text_on_dark_scrim: "#FFFFFF"
+    text_on_light_scrim: "#1B1B1B"
+
+  signal:                                # 纯白高对比。SaaS、B2B、数据多
+    background: "#FFFFFF"
+    surface: "#F3F5F7"
+    text: "#0B0C0F"
+    text_muted: "#6B7280"
+    accent: "#00A676"
+    accent_soft: "#9FE1CB"
+    neutral_data: "#C7CCD3"
+    rule: "#E5E7EB"
+    color_block: "#0B0C0F"
+    color_block_text: "#FFFFFF"
+    scrim_dark: "#000000"
+    scrim_light: "#FFFFFF"
+    text_on_dark_scrim: "#FFFFFF"
+    text_on_light_scrim: "#0B0C0F"
+
+# ---------------------------------------------------------------------
+# scrim（压图遮罩）
+#   dark / light   整块半透明矩形
+#   gradient       从文字所在一侧向另一侧渐隐；full 页默认
+# ---------------------------------------------------------------------
+scrim:
+  dark:
+    color: scrim_dark
+    alpha: 0.55
+  light:
+    color: scrim_light
+    alpha: 0.62
+  gradient:
+    color: scrim_dark
+    alpha_from: 0.82                     # 文字侧（底部）
+    alpha_to: 0.05                       # 远端（顶部）
+    direction: bottom_to_top
+    cover_ratio: 0.75                    # 渐变覆盖画面高度比例
+  overlay_panel:
+    color: scrim_dark
+    alpha: 0.66
+    corner: 0.10
+
+# ---------------------------------------------------------------------
+# 图表（chart_swd.py）
+# ---------------------------------------------------------------------
+chart:
+  dpi: 220
+  font_size: 11
+  label_size: 11
+  annotation_size: 11
+  source_size: 8.5
+  bar_width: 0.62
+  line_width: 2.4
+  line_width_muted: 1.6
+  marker_size: 6
+  neutral_key: neutral_data
+  highlight_key: accent
+  highlight2_key: accent_soft
+  baseline_key: rule
+  example_badge: "示例数据"              # is_example=true 时右上角小标

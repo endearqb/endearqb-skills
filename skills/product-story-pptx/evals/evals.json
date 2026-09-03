@@ -1,0 +1,63 @@
+{
+  "skill": "product-story-pptx",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "b2b-saas-launch",
+      "prompt": "为一个跨系统企业知识问答产品制作12页产品发布PPTX，受众是研发和运营负责人，需要有情绪起伏、产品截图、接入流程和试点数据。",
+      "expected": [
+        "deck.big_idea/audience/desired_action non-empty",
+        "early energy dip and closing energy 5",
+        "at least 3 bleed modes including none",
+        "one flow with exactly one highlight",
+        "charts have action titles, highlight and source",
+        "lint 0 FAIL, inspect 0 ERROR, contact sheet reviewed"
+      ]
+    },
+    {
+      "id": "consumer-hardware-image-led",
+      "prompt": "为一款桌面光环境硬件做10页图文PPTX。产品照片很多，数据很少；希望像编辑杂志，不要满篇卡片和科技蓝。",
+      "expected": [
+        "paper theme or justified custom theme",
+        "image-led partial/edge/full rhythm",
+        "full plus color-block no more than 40 percent",
+        "no invented performance data",
+        "consistent image tone and crop focus",
+        "closing contains concrete CTA"
+      ]
+    },
+    {
+      "id": "data-heavy-solution-deck",
+      "prompt": "为工业AI巡检方案制作14页汇报PPTX，包含准确率、误报率、发现时间和部署步骤。图表要遵循Storytelling with Data。",
+      "expected": [
+        "no pie/donut/3D/dual-axis charts",
+        "bar axes start at zero",
+        "one or two highlights per chart",
+        "direct labels and sources",
+        "no more than two consecutive chart pages",
+        "a breather page between evidence clusters"
+      ]
+    },
+    {
+      "id": "missing-assets-honesty",
+      "prompt": "我只有产品概念和三条功能，没有图片也没有真实数据。先帮我做一份8页PPTX。",
+      "expected": [
+        "asks only direction-critical questions",
+        "uses color-block or typography before generic stock",
+        "marks synthetic images as placeholders",
+        "does not fabricate customer quotes or KPIs",
+        "delivery includes replacement list"
+      ]
+    },
+    {
+      "id": "fast-track-five-slides",
+      "prompt": "明天内部演示，快速做5页简单产品更新PPTX，不要图表。",
+      "expected": [
+        "uses fast track only because all conditions match",
+        "still creates brief/spec and runs lint/build/render/inspect",
+        "keeps a visible energy change",
+        "does not skip visual QA"
+      ]
+    }
+  ]
+}

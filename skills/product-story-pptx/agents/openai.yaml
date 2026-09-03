@@ -1,0 +1,7 @@
+interface:
+  display_name: "Product Story PPTX"
+  short_description: "Create or iterate narrative product decks with editable UI and lineage QA"
+  default_prompt: "Create or iteratively improve a source-backed product showcase PPTX with an emotional arc, image-led layouts, editable UI mockups, version lineage, and focused data storytelling."
+
+policy:
+  allow_implicit_invocation: true
